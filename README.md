@@ -1,3 +1,3 @@
-if(jack == late.again(){
+if(jack == late.again()){
   free pizza for everyone!!
 }
