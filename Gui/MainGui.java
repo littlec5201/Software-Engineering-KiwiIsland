@@ -5,16 +5,21 @@
  */
 package Gui;
 
+import javax.swing.JFrame;
+
 /**
  *
  * @author Ethan
  */
 public class MainGui extends javax.swing.JPanel {
 
+    private JFrame frame;
+    
     /**
      * Creates new form MainGui
      */
-    public MainGui() {
+    public MainGui(JFrame frame) {
+        this.frame = frame;
         initComponents();
     }
 

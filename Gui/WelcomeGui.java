@@ -23,8 +23,13 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
     private JFrame frame;
     
     public WelcomeGui() {
+        frame = new JFrame();
         initComponents();
         easy.addActionListener(this);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.add(this);
+        frame.setVisible(true);
+        frame.pack();
         
     }
 
@@ -38,8 +43,8 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
     private void initComponents() {
 
         gameTitle = new javax.swing.JLabel();
-        onePlayer = new javax.swing.JRadioButton();
-        twoPlayer = new javax.swing.JRadioButton();
+        onePlayerRadio = new javax.swing.JRadioButton();
+        twoPlayerRadio = new javax.swing.JRadioButton();
         difficultyLabel = new javax.swing.JLabel();
         easy = new javax.swing.JButton();
         medium = new javax.swing.JButton();
@@ -51,16 +56,16 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
         gameTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         gameTitle.setText("KIWI ISLAND");
 
-        onePlayer.setBackground(new java.awt.Color(0, 204, 255));
-        onePlayer.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
-        onePlayer.setText("1 Player");
+        onePlayerRadio.setBackground(new java.awt.Color(0, 204, 255));
+        onePlayerRadio.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
+        onePlayerRadio.setText("1 Player");
 
-        twoPlayer.setBackground(new java.awt.Color(0, 204, 255));
-        twoPlayer.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
-        twoPlayer.setText("2 Players");
-        twoPlayer.addActionListener(new java.awt.event.ActionListener() {
+        twoPlayerRadio.setBackground(new java.awt.Color(0, 204, 255));
+        twoPlayerRadio.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
+        twoPlayerRadio.setText("2 Players");
+        twoPlayerRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                twoPlayerActionPerformed(evt);
+                twoPlayerRadioActionPerformed(evt);
             }
         });
 
@@ -98,9 +103,9 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
                 .addGap(33, 33, 33))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(62, 62, 62)
-                .addComponent(onePlayer)
+                .addComponent(onePlayerRadio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(twoPlayer)
+                .addComponent(twoPlayerRadio)
                 .addGap(50, 50, 50))
         );
         layout.setVerticalGroup(
@@ -110,8 +115,8 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
                 .addComponent(gameTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(onePlayer)
-                    .addComponent(twoPlayer))
+                    .addComponent(onePlayerRadio)
+                    .addComponent(twoPlayerRadio))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                 .addComponent(difficultyLabel)
                 .addGap(18, 18, 18)
@@ -123,9 +128,9 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void twoPlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_twoPlayerActionPerformed
+    private void twoPlayerRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_twoPlayerRadioActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_twoPlayerActionPerformed
+    }//GEN-LAST:event_twoPlayerRadioActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -134,28 +139,30 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
     private javax.swing.JLabel gameTitle;
     private javax.swing.JButton hard;
     private javax.swing.JButton medium;
-    private javax.swing.JRadioButton onePlayer;
-    private javax.swing.JRadioButton twoPlayer;
+    private javax.swing.JRadioButton onePlayerRadio;
+    private javax.swing.JRadioButton twoPlayerRadio;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == easy){
-            OnePlayerGui onePlayer = new OnePlayerGui();
-            frame.removeAll();
+            System.out.println("Easy clicked");
+            OnePlayerGui onePlayer = new OnePlayerGui(frame);
+            frame.remove(this);
             frame.add(onePlayer);
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
         }
     }
     
-//   public static void main(String[] args) {
-//        frame = new JFrame();
-//        WelcomeGui welcome = new WelcomeGui();
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        frame.setVisible(true);
-//        
-//        frame.add(welcome);
-//        
-//    }
+   public static void main(String[] args) {
+        WelcomeGui welcome = new WelcomeGui();
+//        welcome.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        welcome.frame.setVisible(true);
+//        welcome.frame.setSize(400,289);
+//        welcome.frame.add(welcome);
+    }
 
     
 }

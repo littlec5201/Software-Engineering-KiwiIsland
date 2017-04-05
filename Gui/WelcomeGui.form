@@ -42,9 +42,9 @@
           </Group>
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
-              <Component id="onePlayer" min="-2" max="-2" attributes="0"/>
+              <Component id="onePlayerRadio" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
-              <Component id="twoPlayer" min="-2" max="-2" attributes="0"/>
+              <Component id="twoPlayerRadio" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -56,8 +56,8 @@
               <Component id="gameTitle" min="-2" pref="79" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="onePlayer" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="twoPlayer" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="onePlayerRadio" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="twoPlayerRadio" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="26" max="32767" attributes="0"/>
               <Component id="difficultyLabel" min="-2" max="-2" attributes="0"/>
@@ -82,7 +82,7 @@
         <Property name="text" type="java.lang.String" value="KIWI ISLAND"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JRadioButton" name="onePlayer">
+    <Component class="javax.swing.JRadioButton" name="onePlayerRadio">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="cc" red="0" type="rgb"/>
@@ -93,7 +93,7 @@
         <Property name="text" type="java.lang.String" value="1 Player"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JRadioButton" name="twoPlayer">
+    <Component class="javax.swing.JRadioButton" name="twoPlayerRadio">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="cc" red="0" type="rgb"/>
@@ -104,7 +104,7 @@
         <Property name="text" type="java.lang.String" value="2 Players"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="twoPlayerActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="twoPlayerRadioActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="difficultyLabel">
