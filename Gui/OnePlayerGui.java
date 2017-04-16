@@ -5,6 +5,12 @@
  */
 package Gui;
 
+import GameModel.Game;
+import GameModel.Player;
+import GameModel.Position;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
@@ -35,7 +41,7 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        playerName = new javax.swing.JTextField();
         submit = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(0, 204, 255));
@@ -59,7 +65,7 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
                         .addContainerGap()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(playerName, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(99, 99, 99)
                         .addComponent(submit)))
@@ -71,7 +77,7 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(playerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(submit)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -79,18 +85,26 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
     }// </editor-fold>//GEN-END:initComponents
 
     private void submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitActionPerformed
-        MainGui mainGui = new MainGui(frame);
+//        Position position = new Position();
+//        Player player = new Player(position, playerName.getText(), 0, 0, 0);
+        Game game = new Game();
+        MainGui mainGui = new MainGui(frame, playerName.getText(), game);
         frame.remove(this);
-        frame.add(mainGui);
+        frame.add(mainGui, BorderLayout.CENTER);
+        frame.pack();
         frame.revalidate();
         frame.repaint();
         frame.pack();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
     }//GEN-LAST:event_submitActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField playerName;
     private javax.swing.JButton submit;
     // End of variables declaration//GEN-END:variables
 

@@ -5,6 +5,9 @@
  */
 package Gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
@@ -30,7 +33,10 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
         frame.add(this);
         frame.setVisible(true);
         frame.pack();
-        
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
     }
 
     /**
@@ -153,16 +159,14 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
             frame.revalidate();
             frame.repaint();
             frame.pack();
+             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
         }
     }
     
-   public static void main(String[] args) {
-        WelcomeGui welcome = new WelcomeGui();
-//        welcome.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        welcome.frame.setVisible(true);
-//        welcome.frame.setSize(400,289);
-//        welcome.frame.add(welcome);
-    }
+   
 
     
 }
