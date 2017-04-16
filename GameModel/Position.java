@@ -1,14 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package GameModel;
+package nz.ac.aut.ense701.gameModel;
 
 /**
+ * Represents the location of any item/grid square/player in the game.
+ * Positions must always be valid for the particular game.
+ * Valid positions include somewhere on the island or surrounding sea,
+ * or the NotOnIsland position which is used for such things as in the player's backpack.
  *
- * @author Ethan
+ * @author AS
+ * @version 2.0 - created July 2011
  */
+
 public class Position
 {
     private int row;
@@ -103,6 +104,7 @@ public class Position
     {
         return (this.island != null);
     } 
+    
 
 
     /**
@@ -146,6 +148,12 @@ public class Position
             }
         }
         return newPosition;
+    }
+    
+    //returns position of row and column by parameters 
+    public Position checkPosition(int row, int column){
+        Position checkPosition = new Position(island, row, column);
+        return checkPosition;
     }
   
 }

@@ -1,10 +1,5 @@
+package nz.ac.aut.ense701.gameModel;
 
-package GameModel;
-
-/**
- *
- * @author Ethan
- */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +7,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
+import javax.swing.JOptionPane;
 
 /**
  * This is the class that knows the Kiwi Island game rules and state
@@ -41,9 +37,7 @@ public class Game
         eventListeners = new HashSet<GameEventListener>();
 
         createNewGame();
-    }
-    
-    
+    } 
     /**
      * Starts a new game.
      * At this stage data is being read from a text file
@@ -134,6 +128,9 @@ public class Game
         // is that a valid position?
         if ( (newPosition != null) && newPosition.isOnIsland() )
         {
+               // isMovePossible = false;
+            
+          //  }
             // what is the terrain at that new position?
             Terrain newTerrain = island.getTerrain(newPosition);
             // can the playuer do it?
@@ -173,7 +170,7 @@ public class Game
     public boolean isExplored(int row, int column) {
         return island.isExplored(new Position(island, row, column));
     }
-
+    
     /**
      * Get occupants for player's position
      * @return occupants at player's position
@@ -218,6 +215,11 @@ public class Game
     public int getKiwiCount()
     {
         return kiwiCount;
+    }
+    
+    public boolean superTrapMessage(){
+        boolean superTrapMessage = true;
+        return superTrapMessage;
     }
     
     /**
@@ -327,6 +329,10 @@ public class Game
                 {
                     result = island.hasPredator(player.getPosition());
                 }
+                //Supertrap can be used anytime if player has one
+                else if(tool.isSuperTrap() && player.hasSuperTrap())
+                {
+                }
                 //Screwdriver can only be used if player has a broken trap
                 else if (tool.isScrewdriver() && player.hasTrap())
                 {
@@ -370,7 +376,7 @@ public class Game
         playerMessage = ""; // Already told player.
         return message;
     }
-    
+
     /**
      * Is there a message for player?
      * @return true if player message available
@@ -378,6 +384,8 @@ public class Game
     public boolean messageForPlayer() {
         return !("".equals(playerMessage));
     }
+    
+
     
     /***************************************************************************************************************
      * Mutator Methods
@@ -445,6 +453,8 @@ public class Game
     public boolean useItem(Object item)
     {  
         boolean success = false;
+        Position currentPosition = player.getPosition();
+
         if ( item instanceof Food && player.hasItem((Food) item) )
         //Player east food to increase stamina
         {
@@ -461,7 +471,102 @@ public class Game
             Tool tool = (Tool) item;
             if (tool.isTrap()&& !tool.isBroken())
             {
-                 success = trapPredator(); 
+                 success = trapPredator(currentPosition); 
+            }
+            else if (tool.isSuperTrap())
+            {   
+                //gets player's current position's row and column 
+                int row = currentPosition.getRow();
+                int col = currentPosition.getColumn();
+                
+                //sets up dialog for selecting direction of where the supertrap covers
+                String trapDirection = "";
+                Object[] trapDirections = {"| down ", "– across", "\\ left diagonal", "/ right diagonal"};
+                trapDirection = (String)JOptionPane.showInputDialog(
+                    null,
+                    "Select which direction the super trap covers: ",
+                    "Set Super Trap",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    trapDirections,
+                    trapDirections[0]);
+                if ((trapDirection != null) && (trapDirection.length() > 0)) {
+                    //if player selects down option then checks for current, also above and below current position for predator
+                    if(trapDirection == trapDirections[0]){
+                        if(!trapPredator(currentPosition)){ 
+                            Position topCurrent = currentPosition.checkPosition(row-1, col);
+                            Position bottCurrent = currentPosition.checkPosition(row+1, col);
+                            if(trapPredator(topCurrent)){
+                                success = trapPredator(topCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                            }
+                            else if(trapPredator(bottCurrent)){
+                                success = trapPredator(bottCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                            }
+                            else{
+                                this.setPlayerMessage("Predator was not caught :(");
+                            }
+                        }
+                       }
+                    //player selects across then checks for left and right of current position for predator
+                    else if(trapDirection == trapDirections[1]){
+                               if(!trapPredator(currentPosition)){ 
+                            Position leftCurrent = currentPosition.checkPosition(row, col-1);
+                            Position rightCurrent = currentPosition.checkPosition(row, col+1);
+                            if(trapPredator(leftCurrent)){
+                                success = trapPredator(leftCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                            }
+                            else if(trapPredator(rightCurrent)){
+                                success = trapPredator(rightCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                             }
+                            else{
+                                this.setPlayerMessage("Predator was not caught :(");
+                            }
+                        }
+                    }
+                    //checks for leftdiagonal positions for predators
+                    else if(trapDirection == trapDirections[2]){
+                        if(!trapPredator(currentPosition)){ 
+                            Position leftTopCurrent = currentPosition.checkPosition(row-1, col-1);
+                            Position rightBottCurrent = currentPosition.checkPosition(row+1, col+1);
+                            if(trapPredator(leftTopCurrent)){
+                                success = trapPredator(leftTopCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                            }
+                            else if(trapPredator(rightBottCurrent)){
+                                success = trapPredator(rightBottCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                            }
+                            else{
+                                this.setPlayerMessage("Predator was not caught :(");
+                            }
+                       
+                        }
+                    }
+                    //checks for right diagonal positions for predators
+                    else if(trapDirection == trapDirections[3]){
+                               if(!trapPredator(currentPosition)){ 
+                            Position rightTopCurrent = currentPosition.checkPosition(row-1, col+1);
+                            Position leftBottCurrent = currentPosition.checkPosition(row+1, col-1);
+                            if(trapPredator(rightTopCurrent)){
+                                success = trapPredator(rightTopCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                            }
+                            else if(trapPredator(leftBottCurrent)){
+                                success = trapPredator(leftBottCurrent);
+                                this.setPlayerMessage("Success! Predator was trapped :)");
+                            }
+                            else{
+                                this.setPlayerMessage("Predator was not caught :(");
+                            }
+                        }
+                        
+                    }
+                    player.drop(tool);
+                }
             }
             else if(tool.isScrewdriver())// Use screwdriver (to fix trap)
             {
@@ -493,7 +598,6 @@ public class Game
         }
         updateGameState();
     }
-       
     /**
      * Attempts to move the player in the specified direction.
      * 
@@ -521,9 +625,7 @@ public class Game
         }
         return successfulMove;
     }
-    
-    
-    
+
     /**
      * Adds a game event listener.
      * @param listener the listener to add
@@ -614,8 +716,8 @@ public class Game
         playerMessage = message;
         
     }
-    /**
-     * Check if player able to move
+    
+    /** Check if player able to move
      * @return true if player can move
      */
     private boolean playerCanMove() 
@@ -629,9 +731,8 @@ public class Game
      * Trap a predator in this position
      * @return true if predator trapped
      */
-    private boolean trapPredator()
+    private boolean trapPredator(Position current)
     {
-        Position current= player.getPosition();
         boolean hadPredator = island.hasPredator(current);
         if(hadPredator) //can trap it
         {
@@ -641,8 +742,11 @@ public class Game
             predatorsTrapped++;
         }
         
+        
         return hadPredator;
     }
+    
+    
     
     /**
      * Checks if the player has met a hazard and applies hazard impact.
@@ -812,6 +916,12 @@ public class Game
             {
                 double weight = input.nextDouble();
                 double size   = input.nextDouble();
+                occupant = new Tool(occPos, occName, occDesc, weight, size);
+            }
+            else if (occType.equals("ST"))
+            {
+                double weight = input.nextDouble();
+                double size = input.nextDouble();
                 occupant = new Tool(occPos, occName, occDesc, weight, size);
             }
             else if ( occType.equals("E") )

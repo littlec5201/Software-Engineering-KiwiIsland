@@ -1,18 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package GameModel;
+package nz.ac.aut.ense701.gameModel;
 
 /**
- *
- * @author Ethan
+ * This class represents a tool that can be found on the island
+ * and gives the player any sort of advantage. 
+ * 
+ * @author AS
+ * @version July 2011
  */
+
 public class Tool extends Item 
 {
     private boolean broken;
-    
     /**
      * Construct a tool with known attributes.
      * @param pos the position of the tool
@@ -51,7 +49,7 @@ public class Tool extends Item
     {
         return this.broken;
     }
-    
+
     /**
     * Check if this tool is a predator trap
     * @return true if trap
@@ -60,6 +58,13 @@ public class Tool extends Item
     {
       String name = this.getName();
       return name.equalsIgnoreCase("Trap");
+    }
+    
+    //checks if tool is sueprtrap
+    public boolean isSuperTrap()
+    {
+        String name = this.getName();
+        return name.equalsIgnoreCase("SuperTrap");
     }
  
     /**
@@ -79,4 +84,3 @@ public class Tool extends Item
     }
 
 }
-

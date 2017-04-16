@@ -1,10 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package GameModel;
-import GameModel.Position;
+package nz.ac.aut.ense701.gameModel;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -215,6 +210,24 @@ public class Player
         return found;
     }
     
+    //checks if player has supertrap
+    public boolean hasSuperTrap()
+    {
+        boolean found = false;
+        for ( Item item : backpack )
+        {
+            if(item instanceof Tool)
+            {
+                Tool tool = (Tool) item;
+                if (tool.isSuperTrap())
+                {
+                    found = true;
+                }
+            }
+        }
+        return found;
+    
+}
     /**
      * get a trap from player's backpack
      * @return trap or null if player has no trap
@@ -235,6 +248,25 @@ public class Player
             }
         }
         return trap;
+    }
+    
+    //gets supertrap from backpack
+    public Tool getSuperTrap()
+    {
+        Tool tool = null;
+        Tool superTrap = null;
+        for (Item item : backpack )
+        {
+            if(item instanceof Tool)
+            {
+               tool = (Tool) item;
+               if (tool.isSuperTrap())
+               {
+                   superTrap = tool;
+               }
+            }
+        }
+        return superTrap;
     }
     
     /**
