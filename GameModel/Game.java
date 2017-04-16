@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
-import javax.swing.JOptionPane;
 
 /**
  * This is the class that knows the Kiwi Island game rules and state and
@@ -20,7 +19,7 @@ import javax.swing.JOptionPane;
  * AS
  */
 public class Game {
-	
+
     //Constants shared with UI to provide player data
     public static final int STAMINA_INDEX = 0;
     public static final int MAXSTAMINA_INDEX = 1;
@@ -38,15 +37,12 @@ public class Game {
     }
 
     /**
-     * Starts a new game.
-     * At this stage data is being read from a text file
+     * Starts a new game. At this stage data is being read from a text file
      */
-	public void createNewGame() {
-//      Callum update
-        kiwiList = new ArrayList<Occupant>();
-        predatorList = new ArrayList<Occupant>();
-        positionList = new ArrayList<Position>();
-
+    public void createNewGame() {
+        this.kiwiList = new ArrayList<Occupant>();
+        this.predatorList = new ArrayList<Occupant>();
+        this.positionList = new ArrayList<Position>();
         totalPredators = 0;
         totalKiwis = 0;
         predatorsTrapped = 0;
@@ -60,15 +56,17 @@ public class Game {
         notifyGameEventListeners();
     }
 
-    /***********************************************************************************************************************
+    /**
+     * *********************************************************************************************************************
      * Accessor methods for game data
-    ************************************************************************************************************************/
-    
+     * **********************************************************************************************************************
+     */
     /**
      * Get number of rows on island
+     *
      * @return number of rows.
      */
-	 public int getNumRows() {
+    public int getNumRows() {
         return island.getNumRows();
     }
 
@@ -89,6 +87,7 @@ public class Game {
     public GameState getState() {
         return state;
     }
+
     /**
      * Provide a description of occupant
      *
@@ -96,7 +95,7 @@ public class Game {
      * @return description if whichOccuoant is an instance of occupant, empty
      * string otherwise
      */
- public String getOccupantDescription(Object whichOccupant) {
+    public String getOccupantDescription(Object whichOccupant) {
         String description = "";
         if (whichOccupant != null && whichOccupant instanceof Occupant) {
             Occupant occupant = (Occupant) whichOccupant;
@@ -116,32 +115,28 @@ public class Game {
 
     /**
      * Checks if possible to move the player in the specified direction.
-     * 
+     *
      * @param direction the direction to move
      * @return true if the move was successful, false if it was an invalid move
      */
-    public boolean isPlayerMovePossible(MoveDirection direction)
-    {
+    public boolean isPlayerMovePossible(MoveDirection direction) {
         boolean isMovePossible = false;
         // what position is the player moving to?
         Position newPosition = player.getPosition().getNewPosition(direction);
         // is that a valid position?
-        if ( (newPosition != null) && newPosition.isOnIsland() )
-        {
-               // isMovePossible = false;
-            
-          //  }
+        if ((newPosition != null) && newPosition.isOnIsland()) {
             // what is the terrain at that new position?
             Terrain newTerrain = island.getTerrain(newPosition);
             // can the playuer do it?
-            isMovePossible = player.hasStaminaToMove(newTerrain) && 
-                             player.isAlive();
+            isMovePossible = player.hasStaminaToMove(newTerrain)
+                    && player.isAlive();
         }
         return isMovePossible;
     }
-    
-      /**
+
+    /**
      * Get terrain for position
+     *
      * @param row
      * @param column
      * @return Terrain at position row, column
@@ -152,6 +147,7 @@ public class Game {
 
     /**
      * Is this position visible?
+     *
      * @param row
      * @param column
      * @return true if position row, column is visible
@@ -160,28 +156,30 @@ public class Game {
         return island.isVisible(new Position(island, row, column));
 
     }
-   
+
     /**
-    * Is this position explored?
-    * @param row
-    * @param column
-    * @return true if position row, column is explored.
-    */
+     * Is this position explored?
+     *
+     * @param row
+     * @param column
+     * @return true if position row, column is explored.
+     */
     public boolean isExplored(int row, int column) {
         return island.isExplored(new Position(island, row, column));
     }
-    
+
     /**
      * Get occupants for player's position
+     *
      * @return occupants at player's position
      */
-    public Occupant[] getOccupantsPlayerPosition()
-    {
+    public Occupant[] getOccupantsPlayerPosition() {
         return island.getOccupants(player.getPosition());
     }
-    
+
     /**
      * Get string for occupants of this position
+     *
      * @param row
      * @param column
      * @return occupant string for this position row, column
@@ -189,34 +187,34 @@ public class Game {
     public String getOccupantStringRepresentation(int row, int column) {
         return island.getOccupantStringRepresentation(new Position(island, row, column));
     }
-    
+
     /**
      * Get values from player for GUI display
+     *
      * @return player values related to stamina and backpack.
      */
-    public int[] getPlayerValues()
-    {
+    public int[] getPlayerValues() {
         int[] playerValues = new int[6];
-        playerValues[STAMINA_INDEX ]= (int) player.getStaminaLevel();
-        playerValues[MAXSTAMINA_INDEX]= (int) player.getMaximumStaminaLevel();
-        playerValues[MAXWEIGHT_INDEX ]= (int) player.getMaximumBackpackWeight();
-        playerValues[WEIGHT_INDEX]= (int) player.getCurrentBackpackWeight();
-        playerValues[MAXSIZE_INDEX ]= (int) player.getMaximumBackpackSize();
-        playerValues[SIZE_INDEX]= (int) player.getCurrentBackpackSize();
-            
+        playerValues[STAMINA_INDEX] = (int) player.getStaminaLevel();
+        playerValues[MAXSTAMINA_INDEX] = (int) player.getMaximumStaminaLevel();
+        playerValues[MAXWEIGHT_INDEX] = (int) player.getMaximumBackpackWeight();
+        playerValues[WEIGHT_INDEX] = (int) player.getCurrentBackpackWeight();
+        playerValues[MAXSIZE_INDEX] = (int) player.getMaximumBackpackSize();
+        playerValues[SIZE_INDEX] = (int) player.getCurrentBackpackSize();
+
         return playerValues;
-        
+
     }
-    
+
     /**
      * How many kiwis have been counted?
+     *
      * @return count
      */
-    public int getKiwiCount()
-    {
+    public int getKiwiCount() {
         return kiwiCount;
     }
-	
+
     /**
      * How many predators are left?
      *
@@ -263,7 +261,8 @@ public class Game {
     public Island getIsland() {
         return island;
     }
-	/**
+
+    /**
      * Draws the island grid to standard output.
      */
     public void drawIsland() {
@@ -317,10 +316,7 @@ public class Game {
                 //Traps can only be used if there is a predator to catch
                 if (tool.isTrap()) {
                     result = island.hasPredator(player.getPosition());
-                } //Supertrap can be used anytime if player has one
-                else if(tool.isSuperTrap() && player.hasSuperTrap())
-                {
-                }//Screwdriver can only be used if player has a broken trap
+                } //Screwdriver can only be used if player has a broken trap
                 else if (tool.isScrewdriver() && player.hasTrap()) {
                     result = player.getTrap().isBroken();
                 } else {
@@ -339,7 +335,13 @@ public class Game {
     public String getWinMessage() {
         return winMessage;
     }
-	public String getLoseMessage() {
+
+    /**
+     * Details of why player lost
+     *
+     * @return loseMessage
+     */
+    public String getLoseMessage() {
         return loseMessage;
     }
 
@@ -387,4 +389,560 @@ public class Game {
         return success;
     }
 
-    
+    /**
+     * Drops what from the player's backpack.
+     *
+     * @param what to drop
+     * @return true if what was dropped, false if not
+     */
+    public boolean dropItem(Object what) {
+        boolean success = player.drop((Item) what);
+        if (success) {
+            // player has dropped an what: try to add to grid square
+            Item item = (Item) what;
+            success = island.addOccupant(player.getPosition(), item);
+            if (success) {
+                // drop successful: everybody has to know that
+                notifyGameEventListeners();
+            } else {
+                // grid square is full: player has to take what back
+                player.collect(item);
+            }
+        }
+        return success;
+    }
+
+    /**
+     * Uses an item in the player's inventory. This can be food or tool items.
+     *
+     * @param item to use
+     * @return true if the item has been used, false if not
+     */
+    public boolean useItem(Object item) {
+        boolean success = false;
+        if (item instanceof Food && player.hasItem((Food) item)) //Player east food to increase stamina
+        {
+            Food food = (Food) item;
+            // player gets energy boost from food
+            player.increaseStamina(food.getEnergy());
+            // player has consumed the food: remove from inventory
+            player.drop(food);
+            // use successful: everybody has to know that
+            notifyGameEventListeners();
+        } else if (item instanceof Tool) {
+            Tool tool = (Tool) item;
+            if (tool.isTrap() && !tool.isBroken()) {
+                success = trapPredator();
+            } else if (tool.isScrewdriver())// Use screwdriver (to fix trap)
+            {
+                if (player.hasTrap()) {
+                    Tool trap = player.getTrap();
+                    trap.fix();
+                }
+            }
+        }
+        updateGameState();
+        return success;
+    }
+
+    /**
+     * Count any kiwis in this position
+     */
+    public void countKiwi() {
+        //check if there are any kiwis here
+        for (Occupant occupant : island.getOccupants(player.getPosition())) {
+            if (occupant instanceof Kiwi) {
+                Kiwi kiwi = (Kiwi) occupant;
+                if (!kiwi.counted()) {
+                    kiwi.count();
+                    kiwiCount++;
+                }
+            }
+        }
+        updateGameState();
+    }
+
+    /**
+     * Attempts to move the player in the specified direction.
+     *
+     * @param direction the direction to move
+     * @return true if the move was successful, false if it was an invalid move
+     */
+    public boolean playerMove(MoveDirection direction) {
+        // what terrain is the player moving on currently
+        boolean successfulMove = false;
+        if (isPlayerMovePossible(direction)) {
+            Position newPosition = player.getPosition().getNewPosition(direction);
+            Terrain terrain = island.getTerrain(newPosition);
+
+            // move the player to new position
+            player.moveToPosition(newPosition, terrain);
+            island.updatePlayerPosition(player);
+            successfulMove = true;
+            // Is there a hazard?
+            checkForHazard();
+            occupantMove(kiwiList);
+            occupantMove(predatorList);
+            for ()
+            updateGameState();
+        }
+        return successfulMove;
+    }
+
+    /**
+     * Callum
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    public int randInt(int min, int max) {
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        return randomNum;
+    }
+
+    /**
+     * Callum Attempts to move all kiwis to a new position
+     */
+    public void occupantMove(ArrayList<Occupant> occupantList) {
+        System.out.println("New move----------------------------");
+        int count = 0;
+        for (Occupant occ : occupantList) {
+            int occRow = occ.getPosition().getRow();
+            int occColumn = occ.getPosition().getColumn();
+            Position northNeighbour = null, southNeighbour = null, eastNeighbour = null, westNeighbour = null;
+            ArrayList<Integer> numsAvailable = new ArrayList<Integer>();
+
+            for (Position pos : positionList) {
+                if (pos.getRow() == occRow - 1 && pos.getColumn() == occColumn) {
+                    if (!island.getOccupantStringRepresentation(pos).equals("H")) {
+                        northNeighbour = pos;
+                        numsAvailable.add(1);
+                    }
+                }
+                if (pos.getRow() == occRow && pos.getColumn() == occColumn + 1) {
+                    if (!island.getOccupantStringRepresentation(pos).equals("H")) {
+                        eastNeighbour = pos;
+                        numsAvailable.add(2);
+                    }
+                }
+                if (pos.getRow() == occRow + 1 && pos.getColumn() == occColumn) {
+                    if (!island.getOccupantStringRepresentation(pos).equals("H")) {
+                        southNeighbour = pos;
+                        numsAvailable.add(3);
+                    }
+                }
+                if (pos.getRow() == occRow && pos.getColumn() == occColumn - 1) {
+                    if (!island.getOccupantStringRepresentation(pos).equals("H")) {
+                        westNeighbour = pos;
+                        numsAvailable.add(4);
+                    }
+                }
+                if (numsAvailable.size() == 4) {
+                    break;
+                }
+            }
+
+            while (true) {
+                boolean moved = false;
+                if (numsAvailable.isEmpty()) {
+                    break;
+                }
+                ArrayList<Occupant> copyList = null;
+                int index = randInt(0, numsAvailable.size() - 1);
+                int directionNumber = numsAvailable.get(index);
+
+                if (numsAvailable.isEmpty()) {
+                    break;
+                }
+                numsAvailable.remove(index);
+
+                switch (directionNumber) {
+                    case 1:
+                        if (island.removeOccupant(occ.getPosition(), occ)) {
+                            island.addOccupant(northNeighbour, occ);
+                            if (occ.getStringRepresentation().equals("K")) {
+                                kiwiList.get(count).setPosition(northNeighbour);
+                            } else {
+                                predatorList.get(count).setPosition(northNeighbour);
+                            }
+                            System.out.println(occ.getName() + " moved north");
+                            System.out.println(island.getOccupants(northNeighbour)[0].getName());
+                            moved = true;
+                        }
+                        break;
+                    case 2:
+                        if (island.removeOccupant(occ.getPosition(), occ)) {
+                            island.addOccupant(eastNeighbour, occ);
+                            if (occ.getStringRepresentation().equals("K")) {
+                                kiwiList.get(count).setPosition(eastNeighbour);
+                            } else {
+                                predatorList.get(count).setPosition(eastNeighbour);
+                            }
+                            System.out.println(occ.getName() + " moved east");
+                            moved = true;
+                        }
+                        break;
+                    case 3:
+                        if (island.removeOccupant(occ.getPosition(), occ)) {
+                            island.addOccupant(southNeighbour, occ);
+                            if (occ.getStringRepresentation().equals("K")) {
+                                kiwiList.get(count).setPosition(southNeighbour);
+                            } else {
+                                predatorList.get(count).setPosition(southNeighbour);
+                            }
+                            System.out.println(occ.getName() + " moved south");
+                            moved = true;
+                        }
+                        break;
+                    case 4:
+                        if (island.removeOccupant(occ.getPosition(), occ)) {
+                            island.addOccupant(westNeighbour, occ);
+                            if (occ.getStringRepresentation().equals("K")) {
+                                kiwiList.get(count).setPosition(westNeighbour);
+                            } else {
+                                predatorList.get(count).setPosition(westNeighbour);
+                            }
+                            System.out.println(occ.getName() + " moved west");
+                            moved = true;
+                        }
+                        break;
+                }
+                if (moved == false) {
+                    System.out.println("Unable to move " + occ.getName());
+                }
+            }
+            count++;
+        }
+    }
+
+    /**
+     * Adds a game event listener.
+     *
+     * @param listener the listener to add
+     */
+    public void addGameEventListener(GameEventListener listener) {
+        eventListeners.add(listener);
+    }
+
+    /**
+     * Removes a game event listener.
+     *
+     * @param listener the listener to remove
+     */
+    public void removeGameEventListener(GameEventListener listener) {
+        eventListeners.remove(listener);
+    }
+
+    /**
+     * *******************************************************************************************************************************
+     * Private methods
+     * *******************************************************************************************************************************
+     */
+    /**
+     * Used after player actions to update game state. Applies the Win/Lose
+     * rules.
+     */
+    private void updateGameState() {
+        String message = "";
+        if (!player.isAlive()) {
+            state = GameState.LOST;
+            message = "Sorry, you have lost the game. " + this.getLoseMessage();
+            this.setLoseMessage(message);
+        } else if (!playerCanMove()) {
+            state = GameState.LOST;
+            message = "Sorry, you have lost the game. You do not have sufficient stamina to move.";
+            this.setLoseMessage(message);
+        } else if (predatorsTrapped == totalPredators) {
+            state = GameState.WON;
+            message = "You win! You have done an excellent job and trapped all the predators.";
+            this.setWinMessage(message);
+        } else if (kiwiCount == totalKiwis) {
+            if (predatorsTrapped >= totalPredators * MIN_REQUIRED_CATCH) {
+                state = GameState.WON;
+                message = "You win! You have counted all the kiwi and trapped at least 80% of the predators.";
+                this.setWinMessage(message);
+            }
+        }
+        // notify listeners about changes
+        notifyGameEventListeners();
+    }
+
+    /**
+     * Sets details about players win
+     *
+     * @param message
+     */
+    private void setWinMessage(String message) {
+        winMessage = message;
+    }
+
+    /**
+     * Sets details of why player lost
+     *
+     * @param message
+     */
+    private void setLoseMessage(String message) {
+        loseMessage = message;
+    }
+
+    /**
+     * Set a message for the player
+     *
+     * @param message
+     */
+    private void setPlayerMessage(String message) {
+        playerMessage = message;
+
+    }
+
+    /**
+     * Check if player able to move
+     *
+     * @return true if player can move
+     */
+    private boolean playerCanMove() {
+        return (isPlayerMovePossible(MoveDirection.NORTH) || isPlayerMovePossible(MoveDirection.SOUTH)
+                || isPlayerMovePossible(MoveDirection.EAST) || isPlayerMovePossible(MoveDirection.WEST));
+
+    }
+
+    /**
+     * Trap a predator in this position
+     *
+     * @return true if predator trapped
+     */
+    private boolean trapPredator() {
+        Position current = player.getPosition();
+        boolean hadPredator = island.hasPredator(current);
+        if (hadPredator) //can trap it
+        {
+            Occupant occupant = island.getPredator(current);
+            //Predator has been trapped so remove
+            island.removeOccupant(current, occupant);
+            predatorsTrapped++;
+        }
+        return hadPredator;
+    }
+
+    /**
+     * Checks if the player has met a hazard and applies hazard impact. Fatal
+     * hazards kill player and end game.
+     */
+    private void checkForHazard() {
+        //check if there are hazards
+        for (Occupant occupant : island.getOccupants(player.getPosition())) {
+            if (occupant instanceof Hazard) {
+                handleHazard((Hazard) occupant);
+            }
+        }
+    }
+
+    /**
+     * Apply impact of hazard
+     *
+     * @param hazard to handle
+     */
+    private void handleHazard(Hazard hazard) {
+        if (hazard.isFatal()) {
+            player.kill();
+            this.setLoseMessage(hazard.getDescription() + " has killed you.");
+        } else if (hazard.isBreakTrap()) {
+            Tool trap = player.getTrap();
+            if (trap != null) {
+                trap.setBroken();
+                this.setPlayerMessage("Sorry your predator trap is broken. You will need to find tools to fix it before you can use it again.");
+            }
+        } else // hazard reduces player's stamina
+        {
+            double impact = hazard.getImpact();
+            // Impact is a reduction in players energy by this % of Max Stamina
+            double reduction = player.getMaximumStaminaLevel() * impact;
+            player.reduceStamina(reduction);
+            // if stamina drops to zero: player is dead
+            if (player.getStaminaLevel() <= 0.0) {
+                player.kill();
+                this.setLoseMessage(" You have run out of stamina");
+            } else // Let player know what happened
+            {
+                this.setPlayerMessage(hazard.getDescription() + " has reduced your stamina.");
+            }
+        }
+    }
+
+    /**
+     * Notifies all game event listeners about a change.
+     */
+    private void notifyGameEventListeners() {
+        for (GameEventListener listener : eventListeners) {
+            listener.gameStateChanged();
+        }
+    }
+
+    /**
+     * Loads terrain and occupant data from a file. At this stage this method
+     * assumes that the data file is correct and just throws an exception or
+     * ignores it if it is not.
+     *
+     * @param fileName file name of the data file
+     */
+    private void initialiseIslandFromFile(String fileName) {
+        try {
+            Scanner input = new Scanner(new File(fileName));
+            // make sure decimal numbers are read in the form "123.23"
+            input.useLocale(Locale.US);
+            input.useDelimiter("\\s*,\\s*");
+
+            // create the island
+            int numRows = input.nextInt();
+            int numColumns = input.nextInt();
+            island = new Island(numRows, numColumns);
+
+            // read and setup the terrain
+            setUpTerrain(input);
+
+            // read and setup the player
+            setUpPlayer(input);
+
+            // read and setup the occupants
+            setUpOccupants(input);
+
+            input.close();
+        } catch (FileNotFoundException e) {
+            System.err.println("Unable to find data file '" + fileName + "'");
+        } catch (IOException e) {
+            System.err.println("Problem encountered processing file.");
+        }
+    }
+
+    /**
+     * Reads terrain data and creates the terrain.
+     *
+     * @param input data from the level file
+     */
+    private void setUpTerrain(Scanner input) {
+        for (int row = 0; row < island.getNumRows(); row++) {
+            String terrainRow = input.next();
+            for (int col = 0; col < terrainRow.length(); col++) {
+                Position pos = new Position(island, row, col);
+                String terrainString = terrainRow.substring(col, col + 1);
+                Terrain terrain = Terrain.getTerrainFromStringRepresentation(terrainString);
+                island.setTerrain(pos, terrain);
+            }
+        }
+    }
+
+    /**
+     * Reads player data and creates the player.
+     *
+     * @param input data from the level file
+     */
+    private void setUpPlayer(Scanner input) {
+        String playerName = input.next();
+        int playerPosRow = input.nextInt();
+        int playerPosCol = input.nextInt();
+        double playerMaxStamina = input.nextDouble();
+        double playerMaxBackpackWeight = input.nextDouble();
+        double playerMaxBackpackSize = input.nextDouble();
+
+        Position pos = new Position(island, playerPosRow, playerPosCol);
+        player = new Player(pos, playerName,
+                playerMaxStamina,
+                playerMaxBackpackWeight, playerMaxBackpackSize);
+        island.updatePlayerPosition(player);
+    }
+
+    /**
+     * Callum Creates occupants listed in the file and adds them to the island.
+     *
+     * @param input data from the level file
+     */
+    private void setUpOccupants(Scanner input) {
+        int numItems = input.nextInt();
+        for (int i = 0; i < numItems; i++) {
+            String occType = input.next();
+            String occName = input.next();
+            String occDesc = input.next();
+            int occRow = input.nextInt();
+            int occCol = input.nextInt();
+
+            Position occPos = null;
+            boolean positionExists = false;
+            for (Position p : positionList) {
+                if (p.getColumn() == occCol && p.getRow() == occRow) {
+                    positionExists = true;
+                    occPos = p;
+                    break;
+                }
+            }
+            if (!positionExists) {
+                occPos = new Position(island, occRow, occCol);
+                positionList.add(occPos);
+            }
+
+            Occupant occupant = null;
+
+            if (occType.equals("T")) {
+                double weight = input.nextDouble();
+                double size = input.nextDouble();
+                occupant = new Tool(occPos, occName, occDesc, weight, size);
+            } else if (occType.equals("E")) {
+                double weight = input.nextDouble();
+                double size = input.nextDouble();
+                double energy = input.nextDouble();
+                occupant = new Food(occPos, occName, occDesc, weight, size, energy);
+            } else if (occType.equals("H")) {
+                double impact = input.nextDouble();
+                occupant = new Hazard(occPos, occName, occDesc, impact);
+            } else if (occType.equals("K")) {
+                occupant = new Kiwi(occPos, occName, occDesc);
+                kiwiList.add(occupant);
+                totalKiwis++;
+            } else if (occType.equals("P")) {
+                occupant = new Predator(occPos, occName, occDesc);
+                predatorList.add(occupant);
+                totalPredators++;
+            } else if (occType.equals("F")) {
+                occupant = new Fauna(occPos, occName, occDesc);
+            }
+            if (occupant != null) {
+                island.addOccupant(occPos, occupant);
+            }
+        }
+    }
+
+    public ArrayList<Occupant> getKiwiList() {
+        return kiwiList;
+    }
+
+    public ArrayList<Occupant> getPredatorList() {
+        return predatorList;
+    }
+
+    public ArrayList<Position> getPositionList() {
+        return positionList;
+    }
+
+    private Island island;
+    private Player player;
+
+//  Callum update
+    private ArrayList<Occupant> kiwiList;
+    private ArrayList<Occupant> predatorList;
+    private ArrayList<Position> positionList;
+//  End of callum update
+
+    private GameState state;
+    private int kiwiCount;
+    private int totalPredators;
+    private int totalKiwis;
+    private int predatorsTrapped;
+    private Set<GameEventListener> eventListeners;
+
+    private final double MIN_REQUIRED_CATCH = 0.8;
+
+    private String winMessage = "";
+    private String loseMessage = "";
+    private String playerMessage = "";
+}
