@@ -96,6 +96,19 @@ public class GridSquare
         return result;
     } 
     
+    //sukim
+    public String getOccupantName()
+    {
+        String result = "";
+        for(Occupant occupant : occupants)
+        {
+            result += occupant.getName();
+        }
+        return result;
+        }
+    
+
+    
     /**
      * Returns a string representation of the terrain.
      * 
@@ -211,4 +224,3 @@ public class GridSquare
     }
     
 }
-

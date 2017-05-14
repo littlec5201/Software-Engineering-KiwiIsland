@@ -134,11 +134,22 @@ public class Island
     * Get string for occupants of this position
     * @param position
     * @return string representing occupants
+    * Callum - Sprint 2
     */
     public String getOccupantStringRepresentation(Position position)
     {
+        try {
+            GridSquare square = getGridSquare(position);
+            return square.getOccupantStringRepresentation();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+    
+    //sukim
+    public String getOccupantName(Position position){
         GridSquare square = getGridSquare(position);
-        return square.getOccupantStringRepresentation();
+        return square.getOccupantName();
     }
     
     /**
@@ -365,12 +376,17 @@ public class Island
      */
     private GridSquare getGridSquare(Position position)
     {
-        GridSquare result = null;
-        if ( position.isOnIsland() )
-        {
-            result = islandGrid[position.getRow()][position.getColumn()];
+        try {
+            GridSquare result = null;
+            if ( position.isOnIsland() )
+            {
+                result = islandGrid[position.getRow()][position.getColumn()];
+            }
+            return result;
+        } catch (Exception e) {
+            System.out.println("Position not on island");
         }
-        return result;
+        return null;
     }
 
 }
