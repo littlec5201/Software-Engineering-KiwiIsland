@@ -1,43 +1,132 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Gui;
 
+import GameModel.Difficulty;
 import GameModel.Game;
 import GameModel.GameEventListener;
 import GameModel.GameState;
 import GameModel.MoveDirection;
 import GameModel.Player;
+import GameModel.Score;
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import javax.swing.Timer;
 
 /**
  *
  * @author Ethan
  */
-public class MainGui extends javax.swing.JPanel implements GameEventListener {
+public class MainGui extends javax.swing.JPanel implements GameEventListener, ActionListener {
 
     private JFrame frame;
     private Game game;
+    private Difficulty difficulty;
+    private Timer timer;
+    private int timeMin = 0;
+    private int timeSec = 0;
     
     /**
      * Creates new form MainGui
      */
-    public MainGui(JFrame frame, String name, Game game) {
+    public MainGui(JFrame frame, Game game, Difficulty difficulty) {
         
         this.setPreferredSize(new Dimension(772,795));
         frame.setPreferredSize(this.getPreferredSize());
         this.frame = frame;
         this.game = game;
         
+        this.difficulty = difficulty;
+        
         setAsGameListener();
         initComponents();
+        
+        initialiseKeyBindings();
+        
+        setUpLists();
+        
+        txtPlayerName.setEditable(false);
+        initIslandGrid();
+        update();
+        
+        if (difficulty == Difficulty.EASY) {
+            txtDifficulty.setText("Easy");
+        }
+        if (difficulty == Difficulty.MEDIUM) {
+            txtDifficulty.setText("Medium");
+        }
+        if (difficulty == Difficulty.HARD) {
+            txtDifficulty.setText("Hard");
+            timer = new Timer(1000, this);
+            labelTimer.setText("Time: ");
+            timer.start();
+        }
+        
+        pnlIsland.setFocusable(true);
+        pnlIsland.requestFocusInWindow();
+    }
+    
+    public void initialiseKeyBindings(){
+        Action upAction = new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Up pressed");
+                game.playerMove(MoveDirection.NORTH);
+            }
+        };
+        Action downAction = new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.playerMove(MoveDirection.SOUTH);
+            }
+        };
+        Action leftAction = new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.playerMove(MoveDirection.WEST);
+            }
+        };
+        Action rightAction = new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.playerMove(MoveDirection.EAST);
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("UP"), "upPressed");
+        this.getActionMap().put("upPressed", upAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("DOWN"), "downPressed");
+        this.getActionMap().put("downPressed", downAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("LEFT"), "leftPressed");
+        this.getActionMap().put("leftPressed", leftAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("RIGHT"), "rightPressed");
+        this.getActionMap().put("rightPressed", rightAction);
+    }
+    
+    public void setUpLists(){
         listInventory.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listInventory.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -52,10 +141,6 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
             }
         });
         listObjects.setVisibleRowCount(20);
-        txtPlayerName.setEditable(false);
-        initIslandGrid();
-        update();
-        txtPlayerName.setText(name);
     }
 
     @Override
@@ -66,19 +151,59 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
         // check for "game over" or "game won"
         if ( game.getState() == GameState.LOST )
         {
+            timer.stop();
+            //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
             JOptionPane.showMessageDialog(
                     this, 
                     game.getLoseMessage(), "Game over!",
                     JOptionPane.INFORMATION_MESSAGE);
-            game.createNewGame();
+            //game.createNewGame();
+            //frame.requestFocus();
+            ArrayList<String> results = game.viewScores();
+            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty);
+            frame.remove(this);
+            frame.add(scoresGui, BorderLayout.CENTER);
+            frame.pack();
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
+            frame.requestFocus();
         }
         else if ( game.getState() == GameState.WON )
         {
-            JOptionPane.showMessageDialog(
+            timer.stop();
+            //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
+            int result = JOptionPane.showConfirmDialog(
                     this, 
                     game.getWinMessage(), "Well Done!",
-                    JOptionPane.INFORMATION_MESSAGE);
-            game.createNewGame();
+                    JOptionPane.YES_NO_OPTION);
+            //game.createNewGame();
+            if(result == JOptionPane.YES_OPTION){
+                
+                if(game.saveScores()){
+                    JOptionPane.showMessageDialog(this, "Score has been saved!", "Score Saved!", JOptionPane.PLAIN_MESSAGE);
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "Score could not be saved...", "Score not saved...", JOptionPane.PLAIN_MESSAGE);
+                }
+            }
+            ArrayList<String> results = game.viewScores();
+            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty);
+            frame.remove(this);
+            frame.add(scoresGui, BorderLayout.CENTER);
+            frame.pack();
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
+            //frame.requestFocus();
         }
         else if (game.messageForPlayer())
         {
@@ -86,6 +211,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
                     this, 
                     game.getPlayerMessage(), "Important Information",
                     JOptionPane.INFORMATION_MESSAGE);   
+            frame.requestFocus();
         }
     }
     
@@ -138,7 +264,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
         btnMoveNorth.setEnabled(game.isPlayerMovePossible(MoveDirection.NORTH));
         btnMoveEast.setEnabled( game.isPlayerMovePossible(MoveDirection.EAST));
         btnMoveSouth.setEnabled(game.isPlayerMovePossible(MoveDirection.SOUTH));
-        btnMoveEast.setEnabled( game.isPlayerMovePossible(MoveDirection.WEST));
+        btnMoveWest.setEnabled( game.isPlayerMovePossible(MoveDirection.WEST));
     }
     
     /**
@@ -175,11 +301,15 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
         txtPlayerName = new javax.swing.JTextField();
         btnMoveEast = new javax.swing.JButton();
         btnMoveSouth = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        txtDifficulty = new javax.swing.JLabel();
         btnMoveNorth = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         txtKiwisCounted = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         txtPredatorsLeft = new javax.swing.JLabel();
+        labelTimer = new javax.swing.JLabel();
+        labeltime = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(0, 204, 255));
         setPreferredSize(new java.awt.Dimension(500, 20));
@@ -362,6 +492,10 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
             }
         });
 
+        jLabel8.setText("Difficulty:");
+
+        txtDifficulty.setText("jLabel10");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -386,38 +520,47 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
                     .addComponent(progBackpackWeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(progBackpackSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(26, 26, 26)
+                        .addComponent(txtDifficulty)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnMoveEast, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnMoveWest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnMoveSouth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(progPlayerStamina, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(progBackpackSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(progBackpackWeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(11, 11, 11)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(txtDifficulty)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnMoveEast, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnMoveWest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnMoveSouth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(progPlayerStamina, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(progBackpackSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(progBackpackWeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         btnMoveNorth.setText("North");
@@ -430,7 +573,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
         });
 
         jLabel7.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
-        jLabel7.setText("Kiwis counted:");
+        jLabel7.setText("Kiwis caught:");
         jLabel7.setToolTipText("");
 
         txtKiwisCounted.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
@@ -448,28 +591,32 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(pnlIsland, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btnMoveNorth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(223, 223, 223))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(64, 64, 64)
+                        .addComponent(pnlIsland, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(58, 58, 58)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtKiwisCounted)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPredatorsLeft)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(labelTimer)
+                                        .addGap(124, 124, 124))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(labeltime)
+                                        .addGap(37, 37, 37)))
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtPredatorsLeft))
+                            .addComponent(btnMoveNorth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(65, 65, 65)))
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -482,12 +629,15 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
                         .addContainerGap()
                         .addComponent(pnlIsland, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(txtKiwisCounted)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel9)
-                                .addComponent(txtPredatorsLeft)))
+                                .addComponent(txtPredatorsLeft)
+                                .addComponent(labeltime))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel7)
+                                .addComponent(txtKiwisCounted)
+                                .addComponent(labelTimer)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnMoveNorth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
@@ -499,35 +649,55 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
 
     private void btnUseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUseActionPerformed
         game.useItem( listInventory.getSelectedValue());
+        frame.requestFocus();
     }//GEN-LAST:event_btnUseActionPerformed
 
     private void btnMoveNorthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveNorthActionPerformed
         game.playerMove(MoveDirection.NORTH);
+        frame.requestFocus();
     }//GEN-LAST:event_btnMoveNorthActionPerformed
 
     private void btnMoveWestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveWestActionPerformed
         game.playerMove(MoveDirection.WEST);
+        frame.requestFocus();
     }//GEN-LAST:event_btnMoveWestActionPerformed
 
     private void btnMoveEastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveEastActionPerformed
         game.playerMove(MoveDirection.EAST);
+        frame.requestFocus();
     }//GEN-LAST:event_btnMoveEastActionPerformed
 
     private void btnMoveSouthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveSouthActionPerformed
         game.playerMove(MoveDirection.SOUTH);
+        frame.requestFocus();
     }//GEN-LAST:event_btnMoveSouthActionPerformed
 
     private void btnDropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDropActionPerformed
         game.dropItem(listInventory.getSelectedValue());
+        frame.requestFocus();
     }//GEN-LAST:event_btnDropActionPerformed
 
     private void btnCountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCountActionPerformed
         game.countKiwi();
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("kiwiCall.wav").getAbsoluteFile());
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException ex) {
+            Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (LineUnavailableException ex) {
+            Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        frame.requestFocus();
     }//GEN-LAST:event_btnCountActionPerformed
 
     private void btnCollectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCollectActionPerformed
         Object obj = listObjects.getSelectedValue();
         game.collectItem(obj);
+        frame.requestFocus();
     }//GEN-LAST:event_btnCollectActionPerformed
 
     private void listObjectsValueChanged(javax.swing.event.ListSelectionEvent evt) {                                         
@@ -538,6 +708,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
             btnCount.setEnabled(game.canCount(occ));
             listObjects.setToolTipText(game.getOccupantDescription(occ));
         }
+        frame.requestFocus();
     } 
     
     private void listInventoryValueChanged(javax.swing.event.ListSelectionEvent evt) {                                           
@@ -548,6 +719,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
             btnUse.setEnabled(game.canUse(item));
             listInventory.setToolTipText(game.getOccupantDescription(item));
         }
+        frame.requestFocus();
     }
     
     private void initIslandGrid()
@@ -585,22 +757,49 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel labelTimer;
+    private javax.swing.JLabel labeltime;
     private javax.swing.JList listInventory;
     private javax.swing.JList listObjects;
     private javax.swing.JPanel pnlIsland;
     private javax.swing.JProgressBar progBackpackSize;
     private javax.swing.JProgressBar progBackpackWeight;
     private javax.swing.JProgressBar progPlayerStamina;
+    private javax.swing.JLabel txtDifficulty;
     private javax.swing.JLabel txtKiwisCounted;
     private javax.swing.JTextField txtPlayerName;
     private javax.swing.JLabel txtPredatorsLeft;
     // End of variables declaration//GEN-END:variables
-//    listInventory = new JList();
-//    listObjects = new JList();
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == timer){
+            timeSec++;
+            if(timeMin == 5){
+                game.setGameState(GameState.LOST);
+                gameStateChanged();
+            }
+            if(timeSec == 60){
+                timeMin++;
+                timeSec = 0;
+            }
+            if(timeSec < 10){
+                labeltime.setText(timeMin+":0"+timeSec);
+            }
+            else{
+                labeltime.setText(timeMin+":"+timeSec);
+            }
+            if(timeMin == 5){
+                game.setGameState(GameState.LOST);
+                gameStateChanged();
+            }
+        }
+    }
 }

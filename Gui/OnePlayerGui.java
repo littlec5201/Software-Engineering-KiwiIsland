@@ -5,6 +5,7 @@
  */
 package Gui;
 
+import GameModel.Difficulty;
 import GameModel.Game;
 import GameModel.Player;
 import GameModel.Position;
@@ -25,8 +26,10 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
      * Creates new form OnePlayerGui
      */
     private JFrame frame;
-    public OnePlayerGui(JFrame frame) {
+    private Difficulty difficulty;
+    public OnePlayerGui(JFrame frame, Difficulty difficulty) {
         this.frame = frame;
+        this.difficulty = difficulty;
 //        submit.addActionListener(this);
         initComponents();
     }
@@ -85,10 +88,8 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
     }// </editor-fold>//GEN-END:initComponents
 
     private void submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitActionPerformed
-//        Position position = new Position();
-//        Player player = new Player(position, playerName.getText(), 0, 0, 0);
-        Game game = new Game();
-        MainGui mainGui = new MainGui(frame, playerName.getText(), game);
+        Game game = new Game(playerName.getText(), difficulty);
+        MainGui mainGui = new MainGui(frame, game, difficulty);
         frame.remove(this);
         frame.add(mainGui, BorderLayout.CENTER);
         frame.pack();

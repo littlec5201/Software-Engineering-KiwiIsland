@@ -5,6 +5,7 @@
  */
 package Gui;
 
+import GameModel.Difficulty;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -25,18 +26,13 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
     
     private JFrame frame;
     
-    public WelcomeGui() {
-        frame = new JFrame();
+    public WelcomeGui(JFrame frame) {
+        //frame = new JFrame();
         initComponents();
         easy.addActionListener(this);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.add(this);
-        frame.setVisible(true);
-        frame.pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenWidth = screenSize.width;
-        int screenHeight = screenSize.height;
-        frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
+        medium.addActionListener(this);
+        hard.addActionListener(this);
+        this.frame = frame;
     }
 
     /**
@@ -151,19 +147,28 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == easy){
+        OnePlayerGui onePlayer = null;
+        if (e.getSource() == easy) {
             System.out.println("Easy clicked");
-            OnePlayerGui onePlayer = new OnePlayerGui(frame);
-            frame.remove(this);
-            frame.add(onePlayer);
-            frame.revalidate();
-            frame.repaint();
-            frame.pack();
-             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
+            onePlayer = new OnePlayerGui(frame, Difficulty.EASY);
         }
+        if (e.getSource() == medium) {
+            System.out.println("Medium clicked");
+            onePlayer = new OnePlayerGui(frame, Difficulty.MEDIUM);
+        }
+        if (e.getSource() == hard) {
+            System.out.println("Hard clicked");
+            onePlayer = new OnePlayerGui(frame, Difficulty.HARD);
+        }
+        frame.remove(this);
+        frame.add(onePlayer);
+        frame.revalidate();
+        frame.repaint();
+        frame.pack();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
     }
     
    

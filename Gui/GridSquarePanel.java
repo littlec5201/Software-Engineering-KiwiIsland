@@ -8,6 +8,7 @@ package Gui;
 import GameModel.Game;
 import GameModel.Terrain;
 import java.awt.Color;
+import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
@@ -15,8 +16,9 @@ import javax.swing.border.LineBorder;
  *
  * @author Ethan
  */
-public class GridSquarePanel extends javax.swing.JPanel 
+public class GridSquarePanel extends javax.swing.JPanel
 {
+   
     /** 
      * Creates new GridSquarePanel.
      * @param game the game to represent
@@ -35,11 +37,18 @@ public class GridSquarePanel extends javax.swing.JPanel
      * Updates the representation of the grid square panel.
      */
     public void update()
+            
     {
+        //sukim
+        ToolTipManager.sharedInstance().setInitialDelay(0);
+        ToolTipManager.sharedInstance().setDismissDelay(15000);
+       
         // get the GridSquare object from the world
         Terrain terrain   = game.getTerrain(row, column);
         boolean squareVisible = game.isVisible(row, column);
         boolean squareExplored = game.isExplored(row, column);
+        //sukim
+       boolean squareFauna = game.isFauna(row, column);
         
         Color      color;
         
@@ -65,6 +74,12 @@ public class GridSquarePanel extends javax.swing.JPanel
                                   Math.min(255, color.getGreen() + 128), 
                                   Math.min(255, color.getBlue()  + 128));
             }
+            //sukim
+           if (squareFauna){
+               String faunaDesc = game.getFaunaDesc(game.checkFauna(row, column));
+               this.setToolTipText(faunaDesc);         
+           }
+            
             lblText.setBackground(color);
             // set border colour according to 
             // whether the player is in the grid square or not
@@ -107,5 +122,9 @@ public class GridSquarePanel extends javax.swing.JPanel
     
     private static final Border normalBorder = new LineBorder(Color.BLACK, 1);
     private static final Border activeBorder = new LineBorder(Color.RED, 3);
+
+             
+        
 }
+
 
