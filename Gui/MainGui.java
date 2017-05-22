@@ -93,6 +93,8 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             timer = new Timer(1000, this);
             labelTimer.setText("Time: ");
             timer.start();
+            kiwisKilled.setText("Kiwis killed:");
+            txtKiwisKilled.setText("0");
         }
 
         pnlIsland.setFocusable(true);
@@ -117,55 +119,6 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
 
     public void setOtherPlayer(MainGui otherPlayer) {
         this.otherPlayer = otherPlayer;
-    }
-
-    public void playerPromptedToMove(MoveDirection direction) {
-        if (multiplayer == Multiplayer.TWO) {
-            if (canMove) {
-                game.playerMove(direction);
-                panelSwitchTimer.start();
-                canMove = false;
-            }
-        } else {
-            game.playerMove(direction);
-            frame.requestFocus();
-        }
-    }
-
-    public void initialiseKeyBindings() {
-        Action upAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playerPromptedToMove(MoveDirection.NORTH);
-            }
-        };
-        Action downAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playerPromptedToMove(MoveDirection.SOUTH);
-            }
-        };
-        Action leftAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playerPromptedToMove(MoveDirection.WEST);
-            }
-        };
-        Action rightAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playerPromptedToMove(MoveDirection.EAST);
-            }
-        };
-
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("UP"), "upPressed");
-        this.getActionMap().put("upPressed", upAction);
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("DOWN"), "downPressed");
-        this.getActionMap().put("downPressed", downAction);
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("LEFT"), "leftPressed");
-        this.getActionMap().put("leftPressed", leftAction);
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("RIGHT"), "rightPressed");
-        this.getActionMap().put("rightPressed", rightAction);
     }
 
     public void setUpLists() {
@@ -200,6 +153,9 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     @Override
     public void gameStateChanged() {
         update();
+        if (difficulty == Difficulty.HARD) {
+            txtKiwisKilled.setText("" + game.getKiwisKilled());
+        }
         // check for "game over" or "game won"
         if (game.getState() == GameState.LOST) {
             if (difficulty == Difficulty.HARD) {
@@ -312,6 +268,112 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         btnMoveWest.setEnabled(game.isPlayerMovePossible(MoveDirection.WEST));
     }
 
+    public void playerPromptedToMove(MoveDirection direction) {
+        if (multiplayer == Multiplayer.TWO) {
+            if (canMove) {
+                game.playerMove(direction);
+                panelSwitchTimer.start();
+                canMove = false;
+            }
+        } else {
+            game.playerMove(direction);
+            frame.requestFocus();
+        }
+    }
+
+    public void initialiseKeyBindings() {
+        Action cAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("catch");
+                game.countKiwi();
+                try {
+                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("kiwiCall.wav").getAbsoluteFile());
+                    Clip clip = AudioSystem.getClip();
+                    clip.open(audioInputStream);
+                    clip.start();
+                } catch (UnsupportedAudioFileException ex) {
+                    Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (LineUnavailableException ex) {
+                    Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                //frame.requestFocus();
+            }
+        };
+
+        Action pAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("pickup");
+                Object obj = listObjects.getSelectedValue();
+                game.collectItem(obj);
+                //frame.requestFocus();
+            }
+        };
+
+        Action uAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("use");
+                game.useItem(listInventory.getSelectedValue());
+                //frame.requestFocus();
+            }
+        };
+
+        Action dAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("drop");
+                game.dropItem(listInventory.getSelectedValue());
+                //frame.requestFocus();
+            }
+        };
+        Action upAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerPromptedToMove(MoveDirection.NORTH);
+            }
+        };
+        Action downAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerPromptedToMove(MoveDirection.SOUTH);
+            }
+        };
+        Action leftAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerPromptedToMove(MoveDirection.WEST);
+            }
+        };
+        Action rightAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerPromptedToMove(MoveDirection.EAST);
+            }
+        };
+
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(Character.valueOf('c')), "cPressed");
+        this.getActionMap().put("cPressed", cAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(Character.valueOf('p')), "pPressed");
+        this.getActionMap().put("pPressed", pAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(Character.valueOf('u')), "uPressed");
+        this.getActionMap().put("uPressed", uAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(Character.valueOf('d')), "dPressed");
+        this.getActionMap().put("dPressed", dAction);
+
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("UP"), "upPressed");
+        this.getActionMap().put("upPressed", upAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("DOWN"), "downPressed");
+        this.getActionMap().put("downPressed", downAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("LEFT"), "leftPressed");
+        this.getActionMap().put("leftPressed", leftAction);
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("RIGHT"), "rightPressed");
+        this.getActionMap().put("rightPressed", rightAction);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -355,6 +417,8 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         txtPredatorsLeft = new javax.swing.JLabel();
         labelTimer = new javax.swing.JLabel();
         labeltime = new javax.swing.JLabel();
+        kiwisKilled = new javax.swing.JLabel();
+        txtKiwisKilled = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(0, 204, 255));
         setPreferredSize(new java.awt.Dimension(500, 20));
@@ -599,7 +663,6 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                             .addComponent(jLabel8)
                             .addComponent(txtDifficulty)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addContainerGap()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnMoveEast, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnMoveWest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -630,6 +693,10 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         txtPredatorsLeft.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         txtPredatorsLeft.setText("0");
 
+        kiwisKilled.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+
+        txtKiwisKilled.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -643,9 +710,13 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(58, 58, 58)
-                        .addComponent(jLabel7)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(kiwisKilled))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtKiwisCounted)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtKiwisKilled, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtKiwisCounted, javax.swing.GroupLayout.DEFAULT_SIZE, 15, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -684,9 +755,13 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                                 .addComponent(txtKiwisCounted)
                                 .addComponent(labelTimer)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnMoveNorth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnMoveNorth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(kiwisKilled)
+                                .addComponent(txtKiwisKilled))))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -698,59 +773,19 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     }                                      
 
     private void btnMoveNorthActionPerformed(java.awt.event.ActionEvent evt) {                                             
-
-        if (multiplayer == Multiplayer.TWO) {
-            if (canMove) {
-                game.playerMove(MoveDirection.NORTH);
-                panelSwitchTimer.start();
-                canMove = false;
-            }
-        } else {
-            game.playerMove(MoveDirection.NORTH);
-            frame.requestFocus();
-        }
+        playerPromptedToMove(MoveDirection.NORTH);
     }                                            
 
     private void btnMoveWestActionPerformed(java.awt.event.ActionEvent evt) {                                            
-
-        if (multiplayer == Multiplayer.TWO) {
-            if (canMove) {
-                game.playerMove(MoveDirection.WEST);
-                panelSwitchTimer.start();
-                canMove = false;
-            }
-        } else {
-            game.playerMove(MoveDirection.WEST);
-            frame.requestFocus();
-        }
+        playerPromptedToMove(MoveDirection.WEST);
     }                                           
 
     private void btnMoveEastActionPerformed(java.awt.event.ActionEvent evt) {                                            
-
-        if (multiplayer == Multiplayer.TWO) {
-            if (canMove) {
-                game.playerMove(MoveDirection.EAST);
-                panelSwitchTimer.start();
-                canMove = false;
-            }
-        } else {
-            game.playerMove(MoveDirection.EAST);
-            frame.requestFocus();
-        }
+        playerPromptedToMove(MoveDirection.EAST);
     }                                           
 
     private void btnMoveSouthActionPerformed(java.awt.event.ActionEvent evt) {                                             
-
-        if (multiplayer == Multiplayer.TWO) {
-            if (canMove) {
-                game.playerMove(MoveDirection.SOUTH);
-                panelSwitchTimer.start();
-                canMove = false;
-            }
-        } else {
-            game.playerMove(MoveDirection.SOUTH);
-            frame.requestFocus();
-        }
+        playerPromptedToMove(MoveDirection.SOUTH);
     }                                            
 
     private void btnDropActionPerformed(java.awt.event.ActionEvent evt) {                                        
@@ -840,6 +875,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel kiwisKilled;
     private javax.swing.JLabel labelTimer;
     private javax.swing.JLabel labeltime;
     private javax.swing.JList listInventory;
@@ -850,6 +886,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     private javax.swing.JProgressBar progPlayerStamina;
     private javax.swing.JLabel txtDifficulty;
     private javax.swing.JLabel txtKiwisCounted;
+    private javax.swing.JLabel txtKiwisKilled;
     private javax.swing.JTextField txtPlayerName;
     private javax.swing.JLabel txtPredatorsLeft;
     // End of variables declaration                   
