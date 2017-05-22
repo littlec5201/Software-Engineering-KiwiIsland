@@ -22,7 +22,10 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -48,10 +51,12 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     private Game game;
     private Difficulty difficulty;
     private Timer timer;
+    private Timer panelSwitchTimer;
     private int timeMin = 0;
     private int timeSec = 0;
     private Multiplayer multiplayer;
     private MainGui otherPlayer;
+    private boolean canMove = true;
 
     /**
      * Creates new form MainGui
@@ -63,7 +68,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         this.frame = frame;
         this.game = game;
         this.multiplayer = multiplayer;
-
+        this.panelSwitchTimer = new Timer(500, this);
         this.difficulty = difficulty;
 
         setAsGameListener();
@@ -93,16 +98,16 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         pnlIsland.setFocusable(true);
         pnlIsland.requestFocusInWindow();
     }
-    
-    public void setPlayerOneColour(){
+
+    public void setPlayerOneColour() {
         jPanel1.setBackground(Color.BLUE);
         jPanel2.setBackground(Color.BLUE);
         jPanel4.setBackground(Color.BLUE);
         pnlIsland.setBackground(Color.BLUE);
         this.setBackground(Color.BLUE);
     }
-    
-    public void setPlayerTwoColour(){
+
+    public void setPlayerTwoColour() {
         jPanel1.setBackground(Color.RED);
         jPanel2.setBackground(Color.RED);
         jPanel4.setBackground(Color.RED);
@@ -114,44 +119,45 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         this.otherPlayer = otherPlayer;
     }
 
+    public void playerPromptedToMove(MoveDirection direction) {
+        if (multiplayer == Multiplayer.TWO) {
+            if (canMove) {
+                game.playerMove(direction);
+                panelSwitchTimer.start();
+                canMove = false;
+            }
+        } else {
+            game.playerMove(direction);
+            frame.requestFocus();
+        }
+    }
+
     public void initialiseKeyBindings() {
         Action upAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Up pressed");
-                game.playerMove(MoveDirection.NORTH);
-                if (multiplayer == Multiplayer.TWO) {
-                    switchPanel();
-                }
+                playerPromptedToMove(MoveDirection.NORTH);
             }
         };
         Action downAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.playerMove(MoveDirection.SOUTH);
-                if (multiplayer == Multiplayer.TWO) {
-                    switchPanel();
-                }
+                playerPromptedToMove(MoveDirection.SOUTH);
             }
         };
         Action leftAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.playerMove(MoveDirection.WEST);
-                if (multiplayer == Multiplayer.TWO) {
-                    switchPanel();
-                }
+                playerPromptedToMove(MoveDirection.WEST);
             }
         };
         Action rightAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.playerMove(MoveDirection.EAST);
-                if (multiplayer == Multiplayer.TWO) {
-                    switchPanel();
-                }
+                playerPromptedToMove(MoveDirection.EAST);
             }
         };
+
         this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("UP"), "upPressed");
         this.getActionMap().put("upPressed", upAction);
         this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("DOWN"), "downPressed");
@@ -194,7 +200,6 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     @Override
     public void gameStateChanged() {
         update();
-
         // check for "game over" or "game won"
         if (game.getState() == GameState.LOST) {
             if (difficulty == Difficulty.HARD) {
@@ -208,7 +213,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             //game.createNewGame();
             //frame.requestFocus();
             ArrayList<String> results = game.viewScores();
-            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty);
+            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
             frame.remove(this);
             frame.add(scoresGui, BorderLayout.CENTER);
             frame.pack();
@@ -237,7 +242,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 }
             }
             ArrayList<String> results = game.viewScores();
-            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty);
+            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
             frame.remove(this);
             frame.add(scoresGui, BorderLayout.CENTER);
             frame.pack();
@@ -313,7 +318,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -685,83 +690,75 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void btnUseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUseActionPerformed
+    private void btnUseActionPerformed(java.awt.event.ActionEvent evt) {                                       
         game.useItem(listInventory.getSelectedValue());
         frame.requestFocus();
-    }//GEN-LAST:event_btnUseActionPerformed
+    }                                      
 
-    private void btnMoveNorthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveNorthActionPerformed
-        game.playerMove(MoveDirection.NORTH);
-        frame.requestFocus();
+    private void btnMoveNorthActionPerformed(java.awt.event.ActionEvent evt) {                                             
+
         if (multiplayer == Multiplayer.TWO) {
-            frame.remove(this);
-            frame.add(otherPlayer);
-            frame.revalidate();
-            frame.repaint();
-            frame.pack();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+            if (canMove) {
+                game.playerMove(MoveDirection.NORTH);
+                panelSwitchTimer.start();
+                canMove = false;
+            }
+        } else {
+            game.playerMove(MoveDirection.NORTH);
+            frame.requestFocus();
         }
-    }//GEN-LAST:event_btnMoveNorthActionPerformed
+    }                                            
 
-    private void btnMoveWestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveWestActionPerformed
-        game.playerMove(MoveDirection.WEST);
-        frame.requestFocus();
+    private void btnMoveWestActionPerformed(java.awt.event.ActionEvent evt) {                                            
+
         if (multiplayer == Multiplayer.TWO) {
-            frame.remove(this);
-            frame.add(otherPlayer);
-            frame.revalidate();
-            frame.repaint();
-            frame.pack();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+            if (canMove) {
+                game.playerMove(MoveDirection.WEST);
+                panelSwitchTimer.start();
+                canMove = false;
+            }
+        } else {
+            game.playerMove(MoveDirection.WEST);
+            frame.requestFocus();
         }
-    }//GEN-LAST:event_btnMoveWestActionPerformed
+    }                                           
 
-    private void btnMoveEastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveEastActionPerformed
-        game.playerMove(MoveDirection.EAST);
-        frame.requestFocus();
+    private void btnMoveEastActionPerformed(java.awt.event.ActionEvent evt) {                                            
+
         if (multiplayer == Multiplayer.TWO) {
-            frame.remove(this);
-            frame.add(otherPlayer);
-            frame.revalidate();
-            frame.repaint();
-            frame.pack();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+            if (canMove) {
+                game.playerMove(MoveDirection.EAST);
+                panelSwitchTimer.start();
+                canMove = false;
+            }
+        } else {
+            game.playerMove(MoveDirection.EAST);
+            frame.requestFocus();
         }
-    }//GEN-LAST:event_btnMoveEastActionPerformed
+    }                                           
 
-    private void btnMoveSouthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveSouthActionPerformed
-        game.playerMove(MoveDirection.SOUTH);
-        frame.requestFocus();
+    private void btnMoveSouthActionPerformed(java.awt.event.ActionEvent evt) {                                             
+
         if (multiplayer == Multiplayer.TWO) {
-            frame.remove(this);
-            frame.add(otherPlayer);
-            frame.revalidate();
-            frame.repaint();
-            frame.pack();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+            if (canMove) {
+                game.playerMove(MoveDirection.SOUTH);
+                panelSwitchTimer.start();
+                canMove = false;
+            }
+        } else {
+            game.playerMove(MoveDirection.SOUTH);
+            frame.requestFocus();
         }
-    }//GEN-LAST:event_btnMoveSouthActionPerformed
+    }                                            
 
-    private void btnDropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDropActionPerformed
+    private void btnDropActionPerformed(java.awt.event.ActionEvent evt) {                                        
         game.dropItem(listInventory.getSelectedValue());
         frame.requestFocus();
-    }//GEN-LAST:event_btnDropActionPerformed
+    }                                       
 
-    private void btnCountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCountActionPerformed
+    private void btnCountActionPerformed(java.awt.event.ActionEvent evt) {                                         
         game.countKiwi();
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("kiwiCall.wav").getAbsoluteFile());
@@ -776,13 +773,13 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
         }
         frame.requestFocus();
-    }//GEN-LAST:event_btnCountActionPerformed
+    }                                        
 
-    private void btnCollectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCollectActionPerformed
+    private void btnCollectActionPerformed(java.awt.event.ActionEvent evt) {                                           
         Object obj = listObjects.getSelectedValue();
         game.collectItem(obj);
         frame.requestFocus();
-    }//GEN-LAST:event_btnCollectActionPerformed
+    }                                          
 
     private void listObjectsValueChanged(javax.swing.event.ListSelectionEvent evt) {
         Object occ = listObjects.getSelectedValue();
@@ -820,7 +817,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         }
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JButton btnCollect;
     private javax.swing.JButton btnCount;
     private javax.swing.JButton btnDrop;
@@ -855,10 +852,15 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     private javax.swing.JLabel txtKiwisCounted;
     private javax.swing.JTextField txtPlayerName;
     private javax.swing.JLabel txtPredatorsLeft;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == panelSwitchTimer) {
+            panelSwitchTimer.stop();
+            switchPanel();
+            canMove = true;
+        }
         if (e.getSource() == timer) {
             timeSec++;
             if (timeMin == 5) {
