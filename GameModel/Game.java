@@ -798,16 +798,6 @@ public class Game {
                             occ.setPosition(northNeighbour);
                             if (difficulty == Difficulty.MEDIUM || difficulty == Difficulty.HARD) {
                                 if (island.getOccupantStringRepresentation(northNeighbour).contains("P") && island.getOccupantStringRepresentation(northNeighbour).contains("H")) {
-//                                    for (Iterator<Occupant> iter = predatorList.iterator(); iterator.hasNext();) {
-//                                        Occupant p = iter.next();
-//                                        if (occ.getPosition().equals(occ.getPosition())) {
-//                                            island.removeOccupant(northNeighbour, occ);
-//                                            predatorsTrapped++;
-//                                            iterator.remove();
-//                                            System.out.println("Predator killed by hazard moving north");
-//                                            break;
-//                                        }
-//                                    }
                                     trapPredator(northNeighbour);
                                 }
                             }
@@ -861,9 +851,12 @@ public class Game {
                     Position currentPos = occ.getPosition();
                     if (island.getOccupantStringRepresentation(currentPos).contains("P") && island.getOccupantStringRepresentation(currentPos).contains("K")) {
                         for (Occupant o : island.getOccupants(currentPos)) {
-                            if (o.getStringRepresentation().equals("K")) {
+                            if (o.getStringRepresentation().equals("K") && kiwisKilled < ((totalKiwis / 1) - 1)) {
                                 island.removeOccupant(currentPos, o);
                                 System.out.println("Kiwi was killed by predator");
+                                kiwisKilled++;
+                            } else {
+                                break;
                             }
                         }
                     }
@@ -1205,17 +1198,9 @@ public class Game {
         ArrayList<String> results = score.view();
         return results;
     }
-
-    public ArrayList<Occupant> getKiwiList() {
-        return kiwiList;
-    }
-
-    public ArrayList<Occupant> getPredatorList() {
-        return predatorList;
-    }
-
-    public ArrayList<Position> getPositionList() {
-        return positionList;
+    
+    public int getKiwisKilled() {
+        return this.kiwisKilled;
     }
 
     private Island island;
@@ -1229,8 +1214,9 @@ public class Game {
 
     private GameState state;
     private int kiwiCount;
-    private int totalPredators;
     private int totalKiwis;
+    private int kiwisKilled;
+    private int totalPredators;
     private int predatorsTrapped;
     private int totalTurns;
     private Set<GameEventListener> eventListeners;
