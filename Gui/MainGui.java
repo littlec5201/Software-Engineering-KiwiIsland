@@ -1,4 +1,3 @@
-
 package Gui;
 
 import GameModel.Difficulty;
@@ -6,9 +5,11 @@ import GameModel.Game;
 import GameModel.GameEventListener;
 import GameModel.GameState;
 import GameModel.MoveDirection;
+import GameModel.Multiplayer;
 import GameModel.Player;
 import GameModel.Score;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -49,30 +50,33 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     private Timer timer;
     private int timeMin = 0;
     private int timeSec = 0;
-    
+    private Multiplayer multiplayer;
+    private MainGui otherPlayer;
+
     /**
      * Creates new form MainGui
      */
-    public MainGui(JFrame frame, Game game, Difficulty difficulty) {
-        
-        this.setPreferredSize(new Dimension(772,795));
+    public MainGui(JFrame frame, Game game, Difficulty difficulty, Multiplayer multiplayer) {
+
+        this.setPreferredSize(new Dimension(772, 795));
         frame.setPreferredSize(this.getPreferredSize());
         this.frame = frame;
         this.game = game;
-        
+        this.multiplayer = multiplayer;
+
         this.difficulty = difficulty;
-        
+
         setAsGameListener();
         initComponents();
-        
+
         initialiseKeyBindings();
-        
+
         setUpLists();
-        
+
         txtPlayerName.setEditable(false);
         initIslandGrid();
         update();
-        
+
         if (difficulty == Difficulty.EASY) {
             txtDifficulty.setText("Easy");
         }
@@ -85,35 +89,67 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             labelTimer.setText("Time: ");
             timer.start();
         }
-        
+
         pnlIsland.setFocusable(true);
         pnlIsland.requestFocusInWindow();
     }
     
-    public void initialiseKeyBindings(){
-        Action upAction = new AbstractAction(){
+    public void setPlayerOneColour(){
+        jPanel1.setBackground(Color.BLUE);
+        jPanel2.setBackground(Color.BLUE);
+        jPanel4.setBackground(Color.BLUE);
+        pnlIsland.setBackground(Color.BLUE);
+        this.setBackground(Color.BLUE);
+    }
+    
+    public void setPlayerTwoColour(){
+        jPanel1.setBackground(Color.RED);
+        jPanel2.setBackground(Color.RED);
+        jPanel4.setBackground(Color.RED);
+        pnlIsland.setBackground(Color.RED);
+        this.setBackground(Color.RED);
+    }
+
+    public void setOtherPlayer(MainGui otherPlayer) {
+        this.otherPlayer = otherPlayer;
+    }
+
+    public void initialiseKeyBindings() {
+        Action upAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Up pressed");
                 game.playerMove(MoveDirection.NORTH);
+                if (multiplayer == Multiplayer.TWO) {
+                    switchPanel();
+                }
             }
         };
-        Action downAction = new AbstractAction(){
+        Action downAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.playerMove(MoveDirection.SOUTH);
+                if (multiplayer == Multiplayer.TWO) {
+                    switchPanel();
+                }
             }
         };
-        Action leftAction = new AbstractAction(){
+        Action leftAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.playerMove(MoveDirection.WEST);
+                if (multiplayer == Multiplayer.TWO) {
+                    switchPanel();
+                }
             }
         };
-        Action rightAction = new AbstractAction(){
+        Action rightAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.playerMove(MoveDirection.EAST);
+                if (multiplayer == Multiplayer.TWO) {
+                    switchPanel();
+                }
             }
         };
         this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("UP"), "upPressed");
@@ -125,8 +161,8 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("RIGHT"), "rightPressed");
         this.getActionMap().put("rightPressed", rightAction);
     }
-    
-    public void setUpLists(){
+
+    public void setUpLists() {
         listInventory.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listInventory.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -143,18 +179,30 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         listObjects.setVisibleRowCount(20);
     }
 
+    public void switchPanel() {
+        frame.remove(this);
+        frame.add(otherPlayer);
+        frame.revalidate();
+        frame.repaint();
+        frame.pack();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+    }
+
     @Override
-    public void gameStateChanged()
-    {
+    public void gameStateChanged() {
         update();
-        
+
         // check for "game over" or "game won"
-        if ( game.getState() == GameState.LOST )
-        {
-            timer.stop();
+        if (game.getState() == GameState.LOST) {
+            if (difficulty == Difficulty.HARD) {
+                timer.stop();
+            }
             //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
             JOptionPane.showMessageDialog(
-                    this, 
+                    this,
                     game.getLoseMessage(), "Game over!",
                     JOptionPane.INFORMATION_MESSAGE);
             //game.createNewGame();
@@ -170,24 +218,21 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             int screenWidth = screenSize.width;
             int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
+            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
             frame.requestFocus();
-        }
-        else if ( game.getState() == GameState.WON )
-        {
+        } else if (game.getState() == GameState.WON) {
             timer.stop();
             //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
             int result = JOptionPane.showConfirmDialog(
-                    this, 
+                    this,
                     game.getWinMessage(), "Well Done!",
                     JOptionPane.YES_NO_OPTION);
             //game.createNewGame();
-            if(result == JOptionPane.YES_OPTION){
-                
-                if(game.saveScores()){
+            if (result == JOptionPane.YES_OPTION) {
+
+                if (game.saveScores()) {
                     JOptionPane.showMessageDialog(this, "Score has been saved!", "Score Saved!", JOptionPane.PLAIN_MESSAGE);
-                }
-                else{
+                } else {
                     JOptionPane.showMessageDialog(this, "Score could not be saved...", "Score not saved...", JOptionPane.PLAIN_MESSAGE);
                 }
             }
@@ -202,36 +247,31 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             int screenWidth = screenSize.width;
             int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
+            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
             //frame.requestFocus();
-        }
-        else if (game.messageForPlayer())
-        {
+        } else if (game.messageForPlayer()) {
             JOptionPane.showMessageDialog(
-                    this, 
+                    this,
                     game.getPlayerMessage(), "Important Information",
-                    JOptionPane.INFORMATION_MESSAGE);   
+                    JOptionPane.INFORMATION_MESSAGE);
             frame.requestFocus();
         }
     }
-    
-    private void setAsGameListener()
-    {
-       game.addGameEventListener(this); 
+
+    private void setAsGameListener() {
+        game.addGameEventListener(this);
     }
-    
-    private void update()
-    {
+
+    private void update() {
         // update the grid square panels
         Component[] components = pnlIsland.getComponents();
-        for ( Component c : components )
-        {
+        for (Component c : components) {
             // all components in the panel are GridSquarePanels,
             // so we can safely cast
             GridSquarePanel gsp = (GridSquarePanel) c;
             gsp.update();
         }
-        
+
         // update player information
         int[] playerValues = game.getPlayerValues();
         txtPlayerName.setText(game.getPlayerName());
@@ -241,32 +281,32 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         progBackpackWeight.setValue(playerValues[Game.WEIGHT_INDEX]);
         progBackpackSize.setMaximum(playerValues[Game.MAXSIZE_INDEX]);
         progBackpackSize.setValue(playerValues[Game.SIZE_INDEX]);
-        
+
         //Update Kiwi and Predator information
-        txtKiwisCounted.setText(Integer.toString(game.getKiwiCount()) );
+        txtKiwisCounted.setText(Integer.toString(game.getKiwiCount()));
         txtPredatorsLeft.setText(Integer.toString(game.getPredatorsRemaining()));
-        
+
         // update inventory list
         listInventory.setListData(game.getPlayerInventory());
         listInventory.clearSelection();
         listInventory.setToolTipText(null);
         btnUse.setEnabled(false);
         btnDrop.setEnabled(false);
-        
+
         // update list of visible objects
         listObjects.setListData(game.getOccupantsPlayerPosition());
         listObjects.clearSelection();
         listObjects.setToolTipText(null);
         btnCollect.setEnabled(false);
         btnCount.setEnabled(false);
-        
+
         // update movement buttons
         btnMoveNorth.setEnabled(game.isPlayerMovePossible(MoveDirection.NORTH));
-        btnMoveEast.setEnabled( game.isPlayerMovePossible(MoveDirection.EAST));
+        btnMoveEast.setEnabled(game.isPlayerMovePossible(MoveDirection.EAST));
         btnMoveSouth.setEnabled(game.isPlayerMovePossible(MoveDirection.SOUTH));
-        btnMoveWest.setEnabled( game.isPlayerMovePossible(MoveDirection.WEST));
+        btnMoveWest.setEnabled(game.isPlayerMovePossible(MoveDirection.WEST));
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -648,28 +688,72 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnUseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUseActionPerformed
-        game.useItem( listInventory.getSelectedValue());
+        game.useItem(listInventory.getSelectedValue());
         frame.requestFocus();
     }//GEN-LAST:event_btnUseActionPerformed
 
     private void btnMoveNorthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveNorthActionPerformed
         game.playerMove(MoveDirection.NORTH);
         frame.requestFocus();
+        if (multiplayer == Multiplayer.TWO) {
+            frame.remove(this);
+            frame.add(otherPlayer);
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+        }
     }//GEN-LAST:event_btnMoveNorthActionPerformed
 
     private void btnMoveWestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveWestActionPerformed
         game.playerMove(MoveDirection.WEST);
         frame.requestFocus();
+        if (multiplayer == Multiplayer.TWO) {
+            frame.remove(this);
+            frame.add(otherPlayer);
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+        }
     }//GEN-LAST:event_btnMoveWestActionPerformed
 
     private void btnMoveEastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveEastActionPerformed
         game.playerMove(MoveDirection.EAST);
         frame.requestFocus();
+        if (multiplayer == Multiplayer.TWO) {
+            frame.remove(this);
+            frame.add(otherPlayer);
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+        }
     }//GEN-LAST:event_btnMoveEastActionPerformed
 
     private void btnMoveSouthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveSouthActionPerformed
         game.playerMove(MoveDirection.SOUTH);
         frame.requestFocus();
+        if (multiplayer == Multiplayer.TWO) {
+            frame.remove(this);
+            frame.add(otherPlayer);
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+        }
     }//GEN-LAST:event_btnMoveSouthActionPerformed
 
     private void btnDropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDropActionPerformed
@@ -700,42 +784,37 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         frame.requestFocus();
     }//GEN-LAST:event_btnCollectActionPerformed
 
-    private void listObjectsValueChanged(javax.swing.event.ListSelectionEvent evt) {                                         
+    private void listObjectsValueChanged(javax.swing.event.ListSelectionEvent evt) {
         Object occ = listObjects.getSelectedValue();
-        if ( occ != null )
-        {
+        if (occ != null) {
             btnCollect.setEnabled(game.canCollect(occ));
             btnCount.setEnabled(game.canCount(occ));
             listObjects.setToolTipText(game.getOccupantDescription(occ));
         }
         frame.requestFocus();
-    } 
-    
-    private void listInventoryValueChanged(javax.swing.event.ListSelectionEvent evt) {                                           
-        Object item =  listInventory.getSelectedValue();
+    }
+
+    private void listInventoryValueChanged(javax.swing.event.ListSelectionEvent evt) {
+        Object item = listInventory.getSelectedValue();
         btnDrop.setEnabled(true);
-        if ( item != null )
-        {
+        if (item != null) {
             btnUse.setEnabled(game.canUse(item));
             listInventory.setToolTipText(game.getOccupantDescription(item));
         }
         frame.requestFocus();
     }
-    
-    private void initIslandGrid()
-    {
+
+    private void initIslandGrid() {
         // Add the grid
-        int rows    = game.getNumRows();
+        int rows = game.getNumRows();
         int columns = game.getNumColumns();
         // set up the layout manager for the island grid panel
         pnlIsland.setLayout(new GridLayout(rows, columns));
         // create all the grid square panels and add them to the panel
         // the layout manager of the panel takes care of assigning them to the
         // the right position
-        for ( int row = 0 ; row < rows ; row++ )
-        {
-            for ( int col = 0 ; col < columns ; col++ )
-            {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
                 pnlIsland.add(new GridSquarePanel(game, row, col));
             }
         }
@@ -780,23 +859,22 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == timer){
+        if (e.getSource() == timer) {
             timeSec++;
-            if(timeMin == 5){
+            if (timeMin == 5) {
                 game.setGameState(GameState.LOST);
                 gameStateChanged();
             }
-            if(timeSec == 60){
+            if (timeSec == 60) {
                 timeMin++;
                 timeSec = 0;
             }
-            if(timeSec < 10){
-                labeltime.setText(timeMin+":0"+timeSec);
+            if (timeSec < 10) {
+                labeltime.setText(timeMin + ":0" + timeSec);
+            } else {
+                labeltime.setText(timeMin + ":" + timeSec);
             }
-            else{
-                labeltime.setText(timeMin+":"+timeSec);
-            }
-            if(timeMin == 5){
+            if (timeMin == 5) {
                 game.setGameState(GameState.LOST);
                 gameStateChanged();
             }

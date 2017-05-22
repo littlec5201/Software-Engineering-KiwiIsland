@@ -5,10 +5,7 @@
  */
 package Gui;
 
-import GameModel.Difficulty;
-import GameModel.Game;
-import GameModel.Player;
-import GameModel.Position;
+import GameModel.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -89,7 +86,7 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
 
     private void submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitActionPerformed
         Game game = new Game(playerName.getText(), difficulty);
-        MainGui mainGui = new MainGui(frame, game, difficulty);
+        MainGui mainGui = new MainGui(frame, game, difficulty, Multiplayer.ONE);
         frame.remove(this);
         frame.add(mainGui, BorderLayout.CENTER);
         frame.pack();

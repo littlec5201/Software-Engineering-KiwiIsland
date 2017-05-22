@@ -5,17 +5,38 @@
  */
 package Gui;
 
+import GameModel.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JFrame;
+
 /**
  *
  * @author Ethan
  */
-public class TwoPlayerGui extends javax.swing.JPanel {
+public class TwoPlayerGui extends javax.swing.JPanel implements ActionListener{
 
+    private String playerOneName;
+    private String playerTwoName;
+    private JFrame frame;
+    private Game playerOneGame, playerTwoGame;
+    private Difficulty difficulty;
+    private MainGui playerOneMainGui, playerTwoMainGui;
     /**
      * Creates new form TwoPlayerGui
      */
-    public TwoPlayerGui() {
+    public TwoPlayerGui(JFrame frame, Difficulty difficulty) {
+        
         initComponents();
+        
+        playerOneName = jTextField1.getText();
+        playerTwoName = jTextField2.getText();
+        btnSubmit.addActionListener(this);
+        this.difficulty = difficulty;
+        this.frame = frame;
     }
 
     /**
@@ -31,7 +52,7 @@ public class TwoPlayerGui extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnSubmit = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(0, 204, 255));
@@ -44,7 +65,12 @@ public class TwoPlayerGui extends javax.swing.JPanel {
 
         jTextField2.setText("jTextField2");
 
-        jButton1.setText("Submit");
+        btnSubmit.setText("Submit");
+        btnSubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSubmitActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Cancel");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -61,7 +87,7 @@ public class TwoPlayerGui extends javax.swing.JPanel {
                 .addGap(58, 58, 58)
                 .addComponent(jButton2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(btnSubmit)
                 .addGap(60, 60, 60))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -87,7 +113,7 @@ public class TwoPlayerGui extends javax.swing.JPanel {
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(btnSubmit)
                     .addComponent(jButton2))
                 .addGap(26, 26, 26))
         );
@@ -97,13 +123,44 @@ public class TwoPlayerGui extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSubmitActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnSubmit;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        if(ae.getSource() == btnSubmit){
+            playerOneGame = new Game(playerOneName, difficulty);
+            playerTwoGame = new Game(playerTwoName, difficulty);
+            
+            playerOneMainGui = new MainGui(frame, playerOneGame, difficulty, Multiplayer.TWO);
+            playerTwoMainGui = new MainGui(frame, playerTwoGame, difficulty, Multiplayer.TWO);
+            
+            playerOneMainGui.setOtherPlayer(playerTwoMainGui);
+            playerOneMainGui.setPlayerOneColour();
+            playerTwoMainGui.setOtherPlayer(playerOneMainGui);
+            playerTwoMainGui.setPlayerTwoColour();
+            
+            frame.remove(this);
+            frame.add(playerOneMainGui, BorderLayout.CENTER);
+            frame.pack();
+            frame.revalidate();
+            frame.repaint();
+            frame.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeight = screenSize.height;
+            frame.setLocation(screenWidth/2 - frame.getWidth()/2, screenHeight/2 - frame.getHeight()/2);
+        }
+    }
 }

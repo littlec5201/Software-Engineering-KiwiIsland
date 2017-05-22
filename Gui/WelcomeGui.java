@@ -5,12 +5,13 @@
  */
 package Gui;
 
-import GameModel.Difficulty;
+import GameModel.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -18,20 +19,27 @@ import javax.swing.WindowConstants;
  *
  * @author Ethan
  */
-public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
+public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
 
     /**
      * Creates new form NewJPanel
      */
-    
+    private OnePlayerGui onePlayer = null;
+    private TwoPlayerGui twoPlayer = null;
+    private ButtonGroup buttongroup;
     private JFrame frame;
-    
+
     public WelcomeGui(JFrame frame) {
         //frame = new JFrame();
         initComponents();
         easy.addActionListener(this);
         medium.addActionListener(this);
         hard.addActionListener(this);
+        buttongroup = new ButtonGroup();
+        onePlayerRadio.setSelected(true);
+        buttongroup.add(onePlayerRadio);
+        buttongroup.add(twoPlayerRadio);
+
         this.frame = frame;
     }
 
@@ -61,6 +69,11 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
         onePlayerRadio.setBackground(new java.awt.Color(0, 204, 255));
         onePlayerRadio.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
         onePlayerRadio.setText("1 Player");
+        onePlayerRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                onePlayerRadioActionPerformed(evt);
+            }
+        });
 
         twoPlayerRadio.setBackground(new java.awt.Color(0, 204, 255));
         twoPlayerRadio.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
@@ -134,6 +147,10 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
         // TODO add your handling code here:
     }//GEN-LAST:event_twoPlayerRadioActionPerformed
 
+    private void onePlayerRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onePlayerRadioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_onePlayerRadioActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel difficultyLabel;
@@ -145,23 +162,67 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
     private javax.swing.JRadioButton twoPlayerRadio;
     // End of variables declaration//GEN-END:variables
 
+    //sprint 3 edit 
+    private Multiplayer multiplayer;
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        OnePlayerGui onePlayer = null;
+        if (onePlayerRadio.isSelected()) {
+            System.out.println("Multi 1");
+            multiplayer = Multiplayer.ONE;
+        } else {
+            System.out.println("Multi 2");
+            multiplayer = Multiplayer.TWO;
+        }
         if (e.getSource() == easy) {
+
             System.out.println("Easy clicked");
-            onePlayer = new OnePlayerGui(frame, Difficulty.EASY);
+            if (multiplayer == Multiplayer.ONE) {
+                onePlayer = new OnePlayerGui(frame, Difficulty.EASY);
+                System.out.println(multiplayer);
+                switchFrame();
+            } else {
+                twoPlayer = new TwoPlayerGui(frame, Difficulty.EASY);
+                switchFrame();
+            }
         }
         if (e.getSource() == medium) {
+
             System.out.println("Medium clicked");
-            onePlayer = new OnePlayerGui(frame, Difficulty.MEDIUM);
+            System.out.println(multiplayer);
+
+            if (multiplayer == Multiplayer.ONE) {
+                onePlayer = new OnePlayerGui(frame, Difficulty.MEDIUM);
+                switchFrame();
+            }
+            if (multiplayer == Multiplayer.TWO) {
+                twoPlayer = new TwoPlayerGui(frame, Difficulty.MEDIUM);
+                switchFrame();
+            }
         }
         if (e.getSource() == hard) {
             System.out.println("Hard clicked");
-            onePlayer = new OnePlayerGui(frame, Difficulty.HARD);
+
+            if (multiplayer == Multiplayer.ONE) {
+                onePlayer = new OnePlayerGui(frame, Difficulty.HARD);
+                switchFrame();
+            }
+            if (multiplayer == Multiplayer.TWO) {
+                twoPlayer = new TwoPlayerGui(frame, Difficulty.HARD);
+                switchFrame();
+            }
         }
+
+        //end of sprint 3 edit
+    }
+
+    private void switchFrame() {
         frame.remove(this);
-        frame.add(onePlayer);
+        if (multiplayer == Multiplayer.ONE) {
+            frame.add(onePlayer);
+        } else {
+            frame.add(twoPlayer);
+        }
         frame.revalidate();
         frame.repaint();
         frame.pack();
@@ -170,9 +231,5 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener{
         int screenHeight = screenSize.height;
         frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
     }
-    
-   
 
-    
 }
-
