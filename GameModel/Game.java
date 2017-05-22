@@ -70,7 +70,7 @@ public class Game {
     /**
      * *********************************************************************************************************************
      * Accessor methods for game data
-    ***********************************************************************************************************************
+     * **********************************************************************************************************************
      */
     /**
      * Get number of rows on island
@@ -440,7 +440,7 @@ public class Game {
     /**
      * *************************************************************************************************************
      * Mutator Methods
-    ***************************************************************************************************************
+     * **************************************************************************************************************
      */
     /**
      * Picks up an item at the current position of the player Ignores any
@@ -798,16 +798,17 @@ public class Game {
                             occ.setPosition(northNeighbour);
                             if (difficulty == Difficulty.MEDIUM || difficulty == Difficulty.HARD) {
                                 if (island.getOccupantStringRepresentation(northNeighbour).contains("P") && island.getOccupantStringRepresentation(northNeighbour).contains("H")) {
-                                    for (Iterator<Occupant> iter = predatorList.iterator(); iterator.hasNext();) {
-                                        Occupant p = iter.next();
-                                        if (occ.getPosition().equals(occ.getPosition())) {
-                                            island.removeOccupant(northNeighbour, occ);
-                                            predatorsTrapped++;
-                                            iterator.remove();
-                                            System.out.println("Predator killed by hazard moving north");
-                                            break;
-                                        }
-                                    }
+//                                    for (Iterator<Occupant> iter = predatorList.iterator(); iterator.hasNext();) {
+//                                        Occupant p = iter.next();
+//                                        if (occ.getPosition().equals(occ.getPosition())) {
+//                                            island.removeOccupant(northNeighbour, occ);
+//                                            predatorsTrapped++;
+//                                            iterator.remove();
+//                                            System.out.println("Predator killed by hazard moving north");
+//                                            break;
+//                                        }
+//                                    }
+                                    trapPredator(northNeighbour);
                                 }
                             }
                             moved = true;
@@ -819,16 +820,7 @@ public class Game {
                             System.out.println(occ.getName() + " moved east");
                             if (difficulty == Difficulty.MEDIUM || difficulty == Difficulty.HARD) {
                                 if (island.getOccupantStringRepresentation(eastNeighbour).contains("P") && island.getOccupantStringRepresentation(eastNeighbour).contains("H")) {
-                                    for (Iterator<Occupant> iter = predatorList.iterator(); iterator.hasNext();) {
-                                        Occupant p = iter.next();
-                                        if (occ.getPosition().equals(occ.getPosition())) {
-                                            island.removeOccupant(eastNeighbour, occ);
-                                            predatorsTrapped++;
-                                            iterator.remove();
-                                            System.out.println("Predator killed by hazard moving east");
-                                            break;
-                                        }
-                                    }
+                                    trapPredator(eastNeighbour);
                                 }
                             }
                             moved = true;
@@ -841,16 +833,7 @@ public class Game {
                             System.out.println(occ.getName() + " moved south");
                             if (difficulty == Difficulty.MEDIUM || difficulty == Difficulty.HARD) {
                                 if (island.getOccupantStringRepresentation(southNeighbour).contains("P") && island.getOccupantStringRepresentation(southNeighbour).contains("H")) {
-                                    for (Iterator<Occupant> iter = predatorList.iterator(); iterator.hasNext();) {
-                                        Occupant p = iter.next();
-                                        if (occ.getPosition().equals(occ.getPosition())) {
-                                            island.removeOccupant(southNeighbour, occ);
-                                            predatorsTrapped++;
-                                            iterator.remove();
-                                            System.out.println("Predator killed by hazard moving south");
-                                            break;
-                                        }
-                                    }
+                                    trapPredator(southNeighbour);
                                 }
                             }
                             moved = true;
@@ -863,16 +846,7 @@ public class Game {
                             System.out.println(occ.getName() + " moved west");
                             if (difficulty == Difficulty.MEDIUM || difficulty == Difficulty.HARD) {
                                 if (island.getOccupantStringRepresentation(westNeighbour).contains("P") && island.getOccupantStringRepresentation(westNeighbour).contains("H")) {
-                                    for (Iterator<Occupant> iter = predatorList.iterator(); iterator.hasNext();) {
-                                        Occupant p = iter.next();
-                                        if (occ.getPosition().equals(occ.getPosition())) {
-                                            island.removeOccupant(westNeighbour, occ);
-                                            predatorsTrapped++;
-                                            iterator.remove();
-                                            System.out.println("Predator killed by hazard moving west");
-                                            break;
-                                        }
-                                    }
+                                    trapPredator(westNeighbour);
                                 }
                             }
                             moved = true;
@@ -882,18 +856,34 @@ public class Game {
                 if (moved == false) {
                     System.out.println("Unable to move " + occ.getName());
                 }
+
+                if (difficulty == Difficulty.HARD) {
+                    Position currentPos = occ.getPosition();
+                    if (island.getOccupantStringRepresentation(currentPos).contains("P") && island.getOccupantStringRepresentation(currentPos).contains("K")) {
+                        for (Occupant o : island.getOccupants(currentPos)) {
+                            if (o.getStringRepresentation().equals("K")) {
+                                island.removeOccupant(currentPos, o);
+                                System.out.println("Kiwi was killed by predator");
+                            }
+                        }
+                    }
+                }
             }
             count++;
         }
-//        if (isKiwiList) {
-//            System.out.println("Kiwi list count: " + kiwiList.size());
-//            System.out.println("Kiwi occupant list size: " + occupantList.size());
-////            kiwiList = occupantList;
-//        } else {
-//            System.out.println("Predator list count: " + predatorList.size());
-//            System.out.println("Predator occupant list size: " + occupantList.size());
-////            predatorList = occupantList;
-//        }
+        kiwiList.clear();
+        predatorList.clear();
+        for (Position p : positionList) {
+            for (Occupant o : island.getOccupants(p)) {
+                if (o.getStringRepresentation().equals("K")) {
+                    kiwiList.add(o);
+                } else if (o.getStringRepresentation().equals("P")) {
+                    predatorList.add(o);
+                }
+            }
+        }
+        System.out.println(kiwiList);
+        System.out.println(predatorList);
     }
 
     /**
@@ -917,7 +907,7 @@ public class Game {
     /**
      * *******************************************************************************************************************************
      * Private methods
-     ********************************************************************************************************************************
+     * *******************************************************************************************************************************
      */
     /**
      * Used after player actions to update game state. Applies the Win/Lose
@@ -1007,7 +997,6 @@ public class Game {
             island.removeOccupant(current, occupant);
             predatorsTrapped++;
         }
-
         return hadPredator;
     }
 
