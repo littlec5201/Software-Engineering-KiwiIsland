@@ -7,6 +7,7 @@ package Gui;
 
 import GameModel.Difficulty;
 import GameModel.Game;
+import GameModel.Multiplayer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -20,18 +21,23 @@ import javax.swing.JList;
  */
 public class ScoresGui extends javax.swing.JPanel {
 
-    JFrame frame;
-    Game game;
-    Difficulty difficulty;
+    private JFrame frame;
+    private Game game;
+    private Difficulty difficulty;
+    private Multiplayer multiplayer;
     /**
      * Creates new form ScoresGui
      */
-    public ScoresGui(JFrame frame, ArrayList<String> scores, Game game, Difficulty difficulty) {
+    public ScoresGui(JFrame frame, ArrayList<String> scores, Game game, Difficulty difficulty, Multiplayer multiplayer) {
         this.frame = frame;
         this.game = game;
         this.difficulty = difficulty;
+        this.multiplayer = multiplayer;
         
         initComponents();
+        if(multiplayer == Multiplayer.TWO){
+            btnPlayAgain.setVisible(false);
+        }
         String [] results = new String[scores.size()];
         for(int i  = 0; i < scores.size(); i++){
             results[i] = scores.get(i);
@@ -125,7 +131,8 @@ public class ScoresGui extends javax.swing.JPanel {
     private void btnMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuActionPerformed
         WelcomeGui welcome = new WelcomeGui(frame);
         frame.remove(this);
-        frame.setSize(welcome.getSize());
+        frame.setPreferredSize(welcome.getSize());
+        
         frame.add(welcome, BorderLayout.CENTER);
         frame.pack();
         frame.revalidate();
@@ -140,7 +147,7 @@ public class ScoresGui extends javax.swing.JPanel {
 
     private void btnPlayAgainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayAgainActionPerformed
         game.createNewGame();
-        MainGui mainGui = new MainGui(frame, game, difficulty);
+        MainGui mainGui = new MainGui(frame, game, difficulty, multiplayer);
         frame.remove(this);
         frame.setSize(mainGui.getSize());
         frame.add(mainGui, BorderLayout.CENTER);

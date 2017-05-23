@@ -156,60 +156,109 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         if (difficulty == Difficulty.HARD) {
             txtKiwisKilled.setText("" + game.getKiwisKilled());
         }
+        
         // check for "game over" or "game won"
         if (game.getState() == GameState.LOST) {
             if (difficulty == Difficulty.HARD) {
                 timer.stop();
             }
-            //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
-            JOptionPane.showMessageDialog(
-                    this,
-                    game.getLoseMessage(), "Game over!",
-                    JOptionPane.INFORMATION_MESSAGE);
-            //game.createNewGame();
-            //frame.requestFocus();
-            ArrayList<String> results = game.viewScores();
-            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
-            frame.remove(this);
-            frame.add(scoresGui, BorderLayout.CENTER);
-            frame.pack();
-            frame.revalidate();
-            frame.repaint();
-            frame.pack();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
-            frame.requestFocus();
-        } else if (game.getState() == GameState.WON) {
-            timer.stop();
-            //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
-            int result = JOptionPane.showConfirmDialog(
-                    this,
-                    game.getWinMessage(), "Well Done!",
-                    JOptionPane.YES_NO_OPTION);
-            //game.createNewGame();
-            if (result == JOptionPane.YES_OPTION) {
-
-                if (game.saveScores()) {
-                    JOptionPane.showMessageDialog(this, "Score has been saved!", "Score Saved!", JOptionPane.PLAIN_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Score could not be saved...", "Score not saved...", JOptionPane.PLAIN_MESSAGE);
-                }
+            if(multiplayer == Multiplayer.ONE){
+                //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
+                JOptionPane.showMessageDialog(
+                        this,
+                        game.getLoseMessage(), "Game over!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                //game.createNewGame();
+                //frame.requestFocus();
+                ArrayList<String> results = game.viewScores();
+                ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
+                frame.remove(this);
+                frame.add(scoresGui, BorderLayout.CENTER);
+                frame.pack();
+                frame.revalidate();
+                frame.repaint();
+                frame.pack();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                int screenWidth = screenSize.width;
+                int screenHeight = screenSize.height;
+                frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+                frame.requestFocus();
+            }else{
+                
+                JOptionPane.showMessageDialog(
+                        this,
+                        "You have lost. The other player wins!", "Game over!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                //game.createNewGame();
+                //frame.requestFocus();
+                
+                ArrayList<String> results = game.viewScores();
+                ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
+                frame.remove(this);
+                frame.add(scoresGui, BorderLayout.CENTER);
+                frame.pack();
+                frame.revalidate();
+                frame.repaint();
+                frame.pack();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                int screenWidth = screenSize.width;
+                int screenHeight = screenSize.height;
+                frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
             }
-            ArrayList<String> results = game.viewScores();
-            ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
-            frame.remove(this);
-            frame.add(scoresGui, BorderLayout.CENTER);
-            frame.pack();
-            frame.revalidate();
-            frame.repaint();
-            frame.pack();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
-            //frame.requestFocus();
+                
+        } else if (game.getState() == GameState.WON) {
+            if(difficulty == Difficulty.HARD){
+                timer.stop();
+            }
+            //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
+            if(multiplayer == Multiplayer.ONE){
+                int result = JOptionPane.showConfirmDialog(
+                        this,
+                        game.getWinMessage(), "Well Done!",
+                        JOptionPane.YES_NO_OPTION);
+                //game.createNewGame();
+                if (result == JOptionPane.YES_OPTION) {
+
+                    if (game.saveScores()) {
+                        JOptionPane.showMessageDialog(this, "Score has been saved!", "Score Saved!", JOptionPane.PLAIN_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Score could not be saved...", "Score not saved...", JOptionPane.PLAIN_MESSAGE);
+                    }
+                }
+                ArrayList<String> results = game.viewScores();
+                ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
+                frame.remove(this);
+                frame.add(scoresGui, BorderLayout.CENTER);
+                frame.pack();
+                frame.revalidate();
+                frame.repaint();
+                frame.pack();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                int screenWidth = screenSize.width;
+                int screenHeight = screenSize.height;
+                frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+                //frame.requestFocus();
+            }else{
+                JOptionPane.showMessageDialog(
+                        this,
+                        "You have won! The other player loses!", "Game over!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                //game.createNewGame();
+                //frame.requestFocus();
+                
+                ArrayList<String> results = game.viewScores();
+                ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
+                frame.remove(this);
+                frame.add(scoresGui, BorderLayout.CENTER);
+                frame.pack();
+                frame.revalidate();
+                frame.repaint();
+                frame.pack();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                int screenWidth = screenSize.width;
+                int screenHeight = screenSize.height;
+                frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
+            }
         } else if (game.messageForPlayer()) {
             JOptionPane.showMessageDialog(
                     this,
@@ -285,49 +334,29 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         Action cAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("catch");
                 game.countKiwi();
-                try {
-                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("kiwiCall.wav").getAbsoluteFile());
-                    Clip clip = AudioSystem.getClip();
-                    clip.open(audioInputStream);
-                    clip.start();
-                } catch (UnsupportedAudioFileException ex) {
-                    Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (LineUnavailableException ex) {
-                    Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                //frame.requestFocus();
             }
         };
 
         Action pAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("pickup");
                 Object obj = listObjects.getSelectedValue();
                 game.collectItem(obj);
-                //frame.requestFocus();
             }
         };
 
         Action uAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("use");
                 game.useItem(listInventory.getSelectedValue());
-                //frame.requestFocus();
             }
         };
 
         Action dAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("drop");
                 game.dropItem(listInventory.getSelectedValue());
-                //frame.requestFocus();
             }
         };
         Action upAction = new AbstractAction() {
@@ -380,7 +409,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents                          
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -449,7 +478,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        listInventory.setPreferredSize(new java.awt.Dimension(120, 500));
+        listInventory.setPreferredSize(new java.awt.Dimension(90, 200));
         jScrollPane1.setViewportView(listInventory);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -493,8 +522,8 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        listObjects.setMaximumSize(new java.awt.Dimension(33, 300));
-        listObjects.setPreferredSize(new java.awt.Dimension(90, 500));
+        listObjects.setMaximumSize(new java.awt.Dimension(33, 200));
+        listObjects.setPreferredSize(new java.awt.Dimension(90, 200));
         listObjects.setVisibleRowCount(20);
         jScrollPane2.setViewportView(listObjects);
 
@@ -765,7 +794,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-    }// </editor-fold>                        
+    }// </editor-fold>//GEN-END:initComponents                        
 
     private void btnUseActionPerformed(java.awt.event.ActionEvent evt) {                                       
         game.useItem(listInventory.getSelectedValue());
@@ -795,18 +824,6 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
 
     private void btnCountActionPerformed(java.awt.event.ActionEvent evt) {                                         
         game.countKiwi();
-        try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("kiwiCall.wav").getAbsoluteFile());
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            clip.start();
-        } catch (UnsupportedAudioFileException ex) {
-            Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (LineUnavailableException ex) {
-            Logger.getLogger(MainGui.class.getName()).log(Level.SEVERE, null, ex);
-        }
         frame.requestFocus();
     }                                        
 
@@ -895,8 +912,11 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == panelSwitchTimer) {
             panelSwitchTimer.stop();
-            switchPanel();
-            canMove = true;
+            if(game.getState() != GameState.LOST && game.getState() != GameState.WON){
+                switchPanel();
+                canMove = true;
+            }
+            
         }
         if (e.getSource() == timer) {
             timeSec++;

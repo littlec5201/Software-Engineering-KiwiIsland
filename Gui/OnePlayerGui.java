@@ -29,6 +29,8 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
         this.difficulty = difficulty;
 //        submit.addActionListener(this);
         initComponents();
+        this.setSize(325, 125);
+        this.frame.setPreferredSize(this.getSize());
     }
 
     /**

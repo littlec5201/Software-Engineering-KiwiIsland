@@ -31,6 +31,7 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
 
     public WelcomeGui(JFrame frame) {
         //frame = new JFrame();
+        this.setSize(489, 320);
         initComponents();
         easy.addActionListener(this);
         medium.addActionListener(this);
@@ -39,6 +40,8 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
         onePlayerRadio.setSelected(true);
         buttongroup.add(onePlayerRadio);
         buttongroup.add(twoPlayerRadio);
+        MapCreator mapCreator = new MapCreator();
+        mapCreator.createMap();
 
         this.frame = frame;
     }
@@ -59,6 +62,7 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
         easy = new javax.swing.JButton();
         medium = new javax.swing.JButton();
         hard = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(0, 204, 255));
 
@@ -96,32 +100,40 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
         hard.setBackground(new java.awt.Color(0, 204, 204));
         hard.setText("Hard");
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setText("For best playing experience turn sound on");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(123, 123, 123)
-                .addComponent(difficultyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(gameTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                .addComponent(gameTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(easy)
-                .addGap(74, 74, 74)
-                .addComponent(medium)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(hard)
-                .addGap(33, 33, 33))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(62, 62, 62)
                 .addComponent(onePlayerRadio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(twoPlayerRadio)
                 .addGap(50, 50, 50))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addComponent(easy)
+                .addGap(115, 115, 115)
+                .addComponent(medium)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(hard)
+                .addGap(33, 33, 33))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(53, 53, 53))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(difficultyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(164, 164, 164))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,7 +151,9 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
                     .addComponent(easy)
                     .addComponent(medium)
                     .addComponent(hard))
-                .addGap(56, 56, 56))
+                .addGap(31, 31, 31)
+                .addComponent(jLabel1)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -157,6 +171,7 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
     private javax.swing.JButton easy;
     private javax.swing.JLabel gameTitle;
     private javax.swing.JButton hard;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton medium;
     private javax.swing.JRadioButton onePlayerRadio;
     private javax.swing.JRadioButton twoPlayerRadio;
