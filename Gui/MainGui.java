@@ -212,6 +212,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             }
             //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
             if(multiplayer == Multiplayer.ONE){
+//                System.out.println("Test");
                 int result = JOptionPane.showConfirmDialog(
                         this,
                         game.getWinMessage(), "Well Done!",
