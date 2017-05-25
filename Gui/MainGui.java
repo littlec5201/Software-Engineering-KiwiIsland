@@ -63,7 +63,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
      */
     public MainGui(JFrame frame, Game game, Difficulty difficulty, Multiplayer multiplayer) {
 
-        this.setPreferredSize(new Dimension(780, 660));
+        this.setPreferredSize(new Dimension(780, 685));
         frame.setPreferredSize(this.getPreferredSize());
         this.frame = frame;
         this.game = game;
@@ -72,6 +72,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
         this.difficulty = difficulty;
 
         setAsGameListener();
+        
         initComponents();
 
         initialiseKeyBindings();
@@ -102,17 +103,15 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     }
 
     public void setPlayerOneColour() {
-        jPanel1.setBackground(Color.BLUE);
-        jPanel2.setBackground(Color.BLUE);
-//        jPanel4.setBackground(Color.BLUE);
-        pnlIsland.setBackground(Color.BLUE);
-        this.setBackground(Color.BLUE);
+        jPanel1.setBackground(new java.awt.Color(0, 204, 255));
+        jPanel2.setBackground(new java.awt.Color(0, 204, 255));
+        pnlIsland.setBackground(new java.awt.Color(0, 204, 255));
+        this.setBackground(new java.awt.Color(0, 204, 255));
     }
 
     public void setPlayerTwoColour() {
         jPanel1.setBackground(Color.RED);
         jPanel2.setBackground(Color.RED);
-//        jPanel4.setBackground(Color.RED);
         pnlIsland.setBackground(Color.RED);
         this.setBackground(Color.RED);
     }
@@ -163,13 +162,12 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 timer.stop();
             }
             if(multiplayer == Multiplayer.ONE){
-                //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
                 JOptionPane.showMessageDialog(
                         this,
                         game.getLoseMessage(), "Game over!",
                         JOptionPane.INFORMATION_MESSAGE);
-                //game.createNewGame();
-                //frame.requestFocus();
+                
+                game.removeGameEventListener(this);
                 ArrayList<String> results = game.viewScores();
                 ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
                 frame.remove(this);
@@ -177,21 +175,17 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 frame.pack();
                 frame.revalidate();
                 frame.repaint();
-                frame.pack();
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 int screenWidth = screenSize.width;
                 int screenHeight = screenSize.height;
                 frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
                 frame.requestFocus();
             }else{
-                
                 JOptionPane.showMessageDialog(
                         this,
                         "You have lost. The other player wins!", "Game over!",
                         JOptionPane.INFORMATION_MESSAGE);
-                //game.createNewGame();
-                //frame.requestFocus();
-                
+                game.removeGameEventListener(this);
                 ArrayList<String> results = game.viewScores();
                 ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
                 frame.remove(this);
@@ -199,7 +193,6 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 frame.pack();
                 frame.revalidate();
                 frame.repaint();
-                frame.pack();
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 int screenWidth = screenSize.width;
                 int screenHeight = screenSize.height;
@@ -210,14 +203,11 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             if(difficulty == Difficulty.HARD){
                 timer.stop();
             }
-            //Score score = new Score(txtPlayerName.getText(), game.getTotalTurns());
             if(multiplayer == Multiplayer.ONE){
-//                System.out.println("Test");
                 int result = JOptionPane.showConfirmDialog(
                         this,
                         game.getWinMessage(), "Well Done!",
                         JOptionPane.YES_NO_OPTION);
-                //game.createNewGame();
                 if (result == JOptionPane.YES_OPTION) {
 
                     if (game.saveScores()) {
@@ -226,6 +216,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                         JOptionPane.showMessageDialog(this, "Score could not be saved...", "Score not saved...", JOptionPane.PLAIN_MESSAGE);
                     }
                 }
+                game.removeGameEventListener(this);
                 ArrayList<String> results = game.viewScores();
                 ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
                 frame.remove(this);
@@ -233,20 +224,16 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 frame.pack();
                 frame.revalidate();
                 frame.repaint();
-                frame.pack();
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 int screenWidth = screenSize.width;
                 int screenHeight = screenSize.height;
                 frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
-                //frame.requestFocus();
             }else{
                 JOptionPane.showMessageDialog(
                         this,
                         "You have won! The other player loses!", "Game over!",
                         JOptionPane.INFORMATION_MESSAGE);
-                //game.createNewGame();
-                //frame.requestFocus();
-                
+                game.removeGameEventListener(this);
                 ArrayList<String> results = game.viewScores();
                 ScoresGui scoresGui = new ScoresGui(frame, results, game, difficulty, multiplayer);
                 frame.remove(this);
@@ -254,7 +241,6 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
                 frame.pack();
                 frame.revalidate();
                 frame.repaint();
-                frame.pack();
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 int screenWidth = screenSize.width;
                 int screenHeight = screenSize.height;
@@ -504,20 +490,16 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel5)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)
-                            .addComponent(txtPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(progPlayerStamina, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(btnDrop, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                            .addComponent(btnUse, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel5)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(progPlayerStamina, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(btnDrop, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                        .addComponent(btnUse, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -556,7 +538,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
 
         jLabel2.setText("Objects:");
 
-        btnCollect.setText("Collect");
+        btnCollect.setText("Pick Up");
         btnCollect.setPreferredSize(new java.awt.Dimension(90, 25));
         btnCollect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -564,7 +546,7 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
             }
         });
 
-        btnCount.setText("Count");
+        btnCount.setText("Catch");
         btnCount.setPreferredSize(new java.awt.Dimension(90, 25));
         btnCount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -814,22 +796,22 @@ public class MainGui extends javax.swing.JPanel implements GameEventListener, Ac
     }//GEN-LAST:event_btnUseActionPerformed
 
     private void btnMoveNorthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveNorthActionPerformed
-        game.playerMove(MoveDirection.NORTH);
+        playerPromptedToMove(MoveDirection.NORTH);
         frame.requestFocus();
     }//GEN-LAST:event_btnMoveNorthActionPerformed
 
     private void btnMoveWestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveWestActionPerformed
-        game.playerMove(MoveDirection.WEST);
+        playerPromptedToMove(MoveDirection.WEST);
         frame.requestFocus();
     }//GEN-LAST:event_btnMoveWestActionPerformed
 
     private void btnMoveEastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveEastActionPerformed
-        game.playerMove(MoveDirection.EAST);
+        playerPromptedToMove(MoveDirection.EAST);
         frame.requestFocus();
     }//GEN-LAST:event_btnMoveEastActionPerformed
 
     private void btnMoveSouthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoveSouthActionPerformed
-        game.playerMove(MoveDirection.SOUTH);
+        playerPromptedToMove(MoveDirection.SOUTH);
         frame.requestFocus();
     }//GEN-LAST:event_btnMoveSouthActionPerformed
 

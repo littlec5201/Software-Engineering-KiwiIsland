@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Gui;
 
 import GameModel.Difficulty;
@@ -25,6 +20,7 @@ public class ScoresGui extends javax.swing.JPanel {
     private Game game;
     private Difficulty difficulty;
     private Multiplayer multiplayer;
+    private WelcomeGui welcome;
     /**
      * Creates new form ScoresGui
      */
@@ -129,10 +125,9 @@ public class ScoresGui extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuActionPerformed
-        WelcomeGui welcome = new WelcomeGui(frame);
+        welcome = new WelcomeGui(frame);
         frame.remove(this);
-        frame.setPreferredSize(welcome.getSize());
-        
+        frame.setPreferredSize(new Dimension(welcome.getWidth(), welcome.getHeight()+25));
         frame.add(welcome, BorderLayout.CENTER);
         frame.pack();
         frame.revalidate();

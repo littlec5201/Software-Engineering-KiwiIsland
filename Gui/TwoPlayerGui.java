@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Gui;
 
 import GameModel.*;
@@ -29,16 +24,12 @@ public class TwoPlayerGui extends javax.swing.JPanel implements ActionListener{
      * Creates new form TwoPlayerGui
      */
     public TwoPlayerGui(JFrame frame, Difficulty difficulty) {
-        
         initComponents();
         
-        
-        playerOneName = jTextField1.getText();
-        playerTwoName = jTextField2.getText();
         btnSubmit.addActionListener(this);
         this.difficulty = difficulty;
         this.frame = frame;
-        this.setSize(343, 175);
+        this.setSize(343, 200);
         this.frame.setPreferredSize(this.getSize());
     }
 
@@ -150,6 +141,9 @@ public class TwoPlayerGui extends javax.swing.JPanel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent ae) {
         if(ae.getSource() == btnSubmit){
+            playerOneName = jTextField1.getText();
+            playerTwoName = jTextField2.getText();
+            
             playerOneGame = new Game(playerOneName, difficulty);
             playerTwoGame = new Game(playerTwoName, difficulty);
             

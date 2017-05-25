@@ -183,18 +183,13 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (onePlayerRadio.isSelected()) {
-            System.out.println("Multi 1");
             multiplayer = Multiplayer.ONE;
         } else {
-            System.out.println("Multi 2");
             multiplayer = Multiplayer.TWO;
         }
         if (e.getSource() == easy) {
-
-            System.out.println("Easy clicked");
             if (multiplayer == Multiplayer.ONE) {
                 onePlayer = new OnePlayerGui(frame, Difficulty.EASY);
-                System.out.println(multiplayer);
                 switchFrame();
             } else {
                 twoPlayer = new TwoPlayerGui(frame, Difficulty.EASY);
@@ -202,10 +197,6 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
             }
         }
         if (e.getSource() == medium) {
-
-            System.out.println("Medium clicked");
-            System.out.println(multiplayer);
-
             if (multiplayer == Multiplayer.ONE) {
                 onePlayer = new OnePlayerGui(frame, Difficulty.MEDIUM);
                 switchFrame();
@@ -216,8 +207,6 @@ public class WelcomeGui extends javax.swing.JPanel implements ActionListener {
             }
         }
         if (e.getSource() == hard) {
-            System.out.println("Hard clicked");
-
             if (multiplayer == Multiplayer.ONE) {
                 onePlayer = new OnePlayerGui(frame, Difficulty.HARD);
                 switchFrame();

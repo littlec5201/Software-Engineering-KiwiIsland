@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Gui;
 
 import GameModel.*;
@@ -27,9 +22,8 @@ public class OnePlayerGui extends javax.swing.JPanel implements ActionListener{
     public OnePlayerGui(JFrame frame, Difficulty difficulty) {
         this.frame = frame;
         this.difficulty = difficulty;
-//        submit.addActionListener(this);
         initComponents();
-        this.setSize(325, 125);
+        this.setSize(325, 150);
         this.frame.setPreferredSize(this.getSize());
     }
 
