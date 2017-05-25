@@ -671,6 +671,8 @@ public class Game {
             island.updatePlayerPosition(player);
             successfulMove = true;
 
+            totalTurns++;
+            
             // Is there a hazard?
             checkForHazard();
 
@@ -1233,12 +1235,12 @@ public class Game {
     }
 
     public boolean saveScores() {
-        Score score = new Score(getPlayerName(), getTotalTurns());
+        Score score = new Score(getPlayerName(), getTotalTurns(), difficulty);
         return score.update();
     }
 
     public ArrayList<String> viewScores() {
-        Score score = new Score(getPlayerName(), getTotalTurns());
+        Score score = new Score(getPlayerName(), getTotalTurns(), difficulty);
         ArrayList<String> results = score.view();
         return results;
     }
