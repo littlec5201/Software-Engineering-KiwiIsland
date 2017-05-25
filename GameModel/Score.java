@@ -30,6 +30,7 @@ public class Score {
         this.name = name;
         this.moves = moves;
         this.difficulty = difficulty;
+        
         try{
            NetworkServerControl server = new NetworkServerControl();
            server.start (null); 

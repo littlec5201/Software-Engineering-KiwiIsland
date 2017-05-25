@@ -957,7 +957,7 @@ public class Game {
         } else if (kiwiCount == totalKiwis) {
             if (predatorsTrapped >= totalPredators * MIN_REQUIRED_CATCH) {
                 state = GameState.WON;
-                message = "You win! You have counted all the kiwi and trapped at least 80% of the predators.";
+                message = "You win! You have counted all the kiwi and trapped at least 80% of the predators. Would you like to save your score?";
                 this.setWinMessage(message);
             }
         }
@@ -1124,9 +1124,9 @@ public class Game {
             input.close();
         } catch (FileNotFoundException e) {
             System.err.println("Unable to find data file '" + fileName + "'");
-        } catch (IOException e) {
-            System.err.println("Problem encountered processing file.");
-        }
+        } //catch (IOException e) {
+//            System.err.println("Problem encountered processing file.");
+//        }
     }
 
     /**
