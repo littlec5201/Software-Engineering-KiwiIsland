@@ -23,16 +23,6 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
-import GameModel.Difficulty;
-import GameModel.Fauna;
-import GameModel.Food;
-import GameModel.Hazard;
-import GameModel.Item;
-import GameModel.Kiwi;
-import GameModel.Occupant;
-import GameModel.Player;
-import GameModel.Predator;
-import GameModel.Terrain;
 
 /**
  * This is the class that knows the Kiwi Island game rules and state and
@@ -551,6 +541,14 @@ public class Game {
                 //gets player's current position's row and column 
                 int row = currentPosition.getRow();
                 int col = currentPosition.getColumn();
+                Position topCurrent = currentPosition.checkPosition(row - 1, col);
+                Position bottCurrent = currentPosition.checkPosition(row + 1, col);
+                Position leftCurrent = currentPosition.checkPosition(row, col - 1);
+                Position rightCurrent = currentPosition.checkPosition(row, col + 1);
+                Position leftTopCurrent = currentPosition.checkPosition(row - 1, col - 1);
+                Position rightBottCurrent = currentPosition.checkPosition(row + 1, col + 1);
+                Position rightTopCurrent = currentPosition.checkPosition(row - 1, col + 1);
+                Position leftBottCurrent = currentPosition.checkPosition(row + 1, col - 1);
 
                 //sets up dialog for selecting direction of where the supertrap covers
                 String trapDirection = "";
@@ -566,64 +564,59 @@ public class Game {
                 if ((trapDirection != null) && (trapDirection.length() > 0)) {
                     //if player selects down option then checks for current, also above and below current position for predator
                     if (trapDirection == trapDirections[0]) {
-                        if (!trapPredator(currentPosition)) {
-                            Position topCurrent = currentPosition.checkPosition(row - 1, col);
-                            Position bottCurrent = currentPosition.checkPosition(row + 1, col);
-                            if (trapPredator(topCurrent)) {
+                        if (trapPredator(currentPosition)) {
+                            success = trapPredator(currentPosition);
+                            this.setPlayerMessage("Success! Predator was trapped :)");
+                        }
+                        if (trapPredator(topCurrent)) {
                                 success = trapPredator(topCurrent);
                                 this.setPlayerMessage("Success! Predator was trapped :)");
-                            } else if (trapPredator(bottCurrent)) {
+                             } 
+                        if (trapPredator(bottCurrent)) {
                                 success = trapPredator(bottCurrent);
                                 this.setPlayerMessage("Success! Predator was trapped :)");
-                            } else {
-                                this.setPlayerMessage("Predator was not caught :(");
-                            }
                         }
                     } //player selects across then checks for left and right of current position for predator
                     else if (trapDirection == trapDirections[1]) {
-                        if (!trapPredator(currentPosition)) {
-                            Position leftCurrent = currentPosition.checkPosition(row, col - 1);
-                            Position rightCurrent = currentPosition.checkPosition(row, col + 1);
-                            if (trapPredator(leftCurrent)) {
+                        if (trapPredator(currentPosition)) {
+                            success = trapPredator(currentPosition);
+                            this.setPlayerMessage("Success! Predator was trapped :)");
+                            
+                        }
+                        if (trapPredator(leftCurrent)) {
                                 success = trapPredator(leftCurrent);
                                 this.setPlayerMessage("Success! Predator was trapped :)");
-                            } else if (trapPredator(rightCurrent)) {
+                        }
+                        if (trapPredator(rightCurrent)) {
                                 success = trapPredator(rightCurrent);
                                 this.setPlayerMessage("Success! Predator was trapped :)");
-                            } else {
-                                this.setPlayerMessage("Predator was not caught :(");
-                            }
                         }
                     } //checks for leftdiagonal positions for predators
                     else if (trapDirection == trapDirections[2]) {
-                        if (!trapPredator(currentPosition)) {
-                            Position leftTopCurrent = currentPosition.checkPosition(row - 1, col - 1);
-                            Position rightBottCurrent = currentPosition.checkPosition(row + 1, col + 1);
-                            if (trapPredator(leftTopCurrent)) {
+                        if (trapPredator(currentPosition)) {
+                            success = trapPredator(currentPosition);
+                            this.setPlayerMessage("Success! Predator was trapped :)");
+                        }
+                         if (trapPredator(leftTopCurrent)) {
                                 success = trapPredator(leftTopCurrent);
                                 this.setPlayerMessage("Success! Predator was trapped :)");
-                            } else if (trapPredator(rightBottCurrent)) {
+                         }
+                         if (trapPredator(rightBottCurrent)) {
                                 success = trapPredator(rightBottCurrent);
-                            } else {
-                                this.setPlayerMessage("Predator was not caught :(");
-                            }
-
-                        }
+                         }
                     } //checks for right diagonal positions for predators
                     else if (trapDirection == trapDirections[3]) {
-                        if (!trapPredator(currentPosition)) {
-                            Position rightTopCurrent = currentPosition.checkPosition(row - 1, col + 1);
-                            Position leftBottCurrent = currentPosition.checkPosition(row + 1, col - 1);
-                            if (trapPredator(rightTopCurrent)) {
+                        if (trapPredator(currentPosition)) {
+                            this.setPlayerMessage("Success! Predator was trapped :)");
+                        }
+                        if (trapPredator(rightTopCurrent)) {
                                 success = trapPredator(rightTopCurrent);
                                 this.setPlayerMessage("Success! Predator was trapped :)");
-                            } else if (trapPredator(leftBottCurrent)) {
+                        }
+                        if (trapPredator(leftBottCurrent)) {
                                 success = trapPredator(leftBottCurrent);
                                 this.setPlayerMessage("Success! Predator was trapped :)");
-                            } else {
-                                this.setPlayerMessage("Predator was not caught :(");
-                            }
-                        }
+                         } 
 
                     }
                     player.drop(tool);
