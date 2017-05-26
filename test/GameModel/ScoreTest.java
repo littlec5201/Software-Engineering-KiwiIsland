@@ -63,4 +63,14 @@ public class ScoreTest {
         score.emptyDBRecords();
     }
     
+    /**
+     * Test the emptyDBRecords method, of class Score
+     */
+    @Test
+    public void testEmptyDBRecords(){
+        score.emptyDBRecords();
+        ArrayList<String> values = score.view();
+        assertEquals("Check emptying of database: ", values.size(), 0);
+    }
+    
 }
