@@ -23,6 +23,16 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
+import GameModel.Difficulty;
+import GameModel.Fauna;
+import GameModel.Food;
+import GameModel.Hazard;
+import GameModel.Item;
+import GameModel.Kiwi;
+import GameModel.Occupant;
+import GameModel.Player;
+import GameModel.Predator;
+import GameModel.Terrain;
 
 /**
  * This is the class that knows the Kiwi Island game rules and state and
@@ -190,7 +200,7 @@ public class Game {
     //sukim
     public boolean isFauna(int row, int column) {
         boolean isFauna = false;
-        if (island.getOccupantStringRepresentation(new Position(island, row, column)).equals("F")) {
+        if (island.getOccupantStringRepresentation(new Position(island, row, column)).contains("F")) {
             isFauna = true;
         }
         return isFauna;
@@ -199,6 +209,7 @@ public class Game {
     //sukim
     public String checkFauna(int row, int column) {
         String faunaName = island.getOccupantName(new Position(island, row, column));
+        
         return faunaName;
 
     }
@@ -207,41 +218,50 @@ public class Game {
     public String getFaunaDesc(String fauna) {
         String faunaDesc = "";
 
-        if (fauna.equalsIgnoreCase("oystercatcher")) {
-            faunaDesc = "<html>" + "OysterCatcher:" + "<br>" + " a bird that is commonly found along shorelines " + "<br>" + "that wade to look for food in mud and sand."
-                    + "" + "<br>" + "Found on coasts around the world. Ranges of " + "<br>" + "39-50cm in length and 72-91 cm in wingspan. " + "<html>";
-        } else if (fauna.equalsIgnoreCase("crab")) {
-            faunaDesc = "<html>" + "Crab: " + "<br>" + "a crustacean that live in the world's ocean," + "<br>" + " fresh water and land."
+        if (fauna.contains("Oystercatcher")) {
+            faunaDesc += "<html>" + "<b><u>OysterCatcher:</u></b>" + "<br>" + " a bird that is commonly found along shorelines " + "<br>" + "that wade to look for food in mud and sand."
+                    + "" + "<br>" + "Found on coasts around the world. Ranges of " + "<br>" + "39-50cm in length and 72-91 cm in wingspan. " + "<br>" +"<html>";
+        }
+        if (fauna.contains("Crab")) {
+            faunaDesc += "<html>" + "<b><u>Crab:</u> </b>" + "<br>" + "a crustacean that live in the world's ocean," + "<br>" + " fresh water and land."
                     + " Covered in exoskeleton with" + "<br>" + " a pair of claws. Different species range in " + "<br>" + "sizes"
-                    + " and can grow up to 4 metres." + "<html>";
-        } else if (fauna.equalsIgnoreCase("fernbird")) {
-            faunaDesc = "<html>" + "Fernbird: " + "<br>" + "rich brown on top and white below with" + "<br>" + " brown spots."
-                    + " Mainly travel on feet and occasional" + "<br>" + "short flights of 15 metres. A rare species." + "<html>";
-        } else if (fauna.equalsIgnoreCase("heron")) {
-            faunaDesc = "<html>" + "Heron: " + "<br>" + "Long legged fresh water and coastal bird. Largest " + "<br>" + "species is the Goliath Heron which "
-                    + "stands up " + "<br>" + "to 152cm tall. The neck can form the " + "<br>" + "shape of an S." + "<html>";
-        } else if (fauna.equalsIgnoreCase("robin")) {
-            faunaDesc = "<html>" + "NZ Robin:" + "<br>" + "also known as toutouwai and can only" + "<br>" + "be found in New Zealand."
+                    + " and can grow up to 4 metres." + "<br>" +"<html>";
+        }
+        if (fauna.contains("Fernbird")) {
+            faunaDesc += "<html>" + "<b><u>Fernbird:</u> </b>" + "<br>" + "rich brown on top and white below with" + "<br>" + " brown spots."
+                    + " Mainly travel on feet and occasional" + "<br>" + "short flights of 15 metres. A rare species." + "<br>" + "<html>";
+        }
+        if (fauna.contains("Heron")) {
+            faunaDesc += "<html>" + "<b><u>Heron:</u> </b>" + "<br>" + "Long legged fresh water and coastal bird. Largest " + "<br>" + "species is the Goliath Heron which "
+                    + "stands up " + "<br>" + "to 152cm tall. The neck can form the " + "<br>" + "shape of an S." + "<br>" + "<html>";
+        }
+        if (fauna.contains("Robin")) {
+            faunaDesc += "<html>" + "<b><u>NZ Robin:</u></b>" + "<br>" + "also known as toutouwai and can only" + "<br>" + "be found in New Zealand."
                     + " Can survive up to " + "<br>" + "14 years where few predators exists. Small in " + "<br>" + "size like a sparrow. Enjoys"
-                    + " forests with dense," + "<br>" + "even, canopies and ground covered with leaf litter." + "<html>";
-        } else if (fauna.equalsIgnoreCase("tui")) {
-            faunaDesc = "<html>" + "Tui:" + "<br>" + "are medium in size and are usually very" + "<br>" + " vocal. From a distance looks black in colour "
+                    + " forests with dense," + "<br>" + "even, canopies and ground covered with leaf litter." + "<br>" +"<html>";
+        }
+        if (fauna.contains("Tui")) {
+            faunaDesc += "<html>" + "<b><u>Tui:</u></b>" + "<br>" + "are medium in size and are usually very" + "<br>" + " vocal. From a distance looks black in colour "
                     + "<br>" + "but in good light have a blue, green " + "<br>" + "and bronze iridescent sbeen and a white tuff" + "<br>" + " at the throat. Usually nest"
-                    + " in native forest " + "<br>" + "and shrub. Notoriously aggressive and will defend a " + "<br>" + "flowering tree." + "<html>";
-        } else if (fauna.equalsIgnoreCase("fern")) {
-            faunaDesc = "<html>" + "Silver Fern:" + "<br>" + "known to grow 10 metres or more. The" + "<br>" + " crown is dense, and the fronds tend to" + "<br>" + " be about 4 metres long and have a "
-                    + "<br>" + "silver-white colouration on the undersides. It" + "<br>" + " has been the symbol of New Zealandâ€™s national" + "<br>" + " rugby team since the 1880s." + "<html>";
-        } else if (fauna.equalsIgnoreCase("manuka")) {
-            faunaDesc = "<html>" + "Manuka:" + "<br>" + "typically a shrurb of 2-5 metres but can " + "<br>" + "grow up to 15 metres"
+                    + " in native forest " + "<br>" + "and shrub. Notoriously aggressive and will defend a " + "<br>" + "flowering tree." + "<br>" +"<html>";
+        }
+        if(fauna.contains("Fern") && !fauna.contains("Fernbird")) {
+            faunaDesc += "<html>" + "<b><u>Silver Fern:</u></b>" + "<br>" + "known to grow 10 metres or more. The" + "<br>" + " crown is dense, and the fronds tend to" + "<br>" + " be about 4 metres long and have a "
+                    + "<br>" + "silver-white colouration on the undersides. It" + "<br>" + " has been the symbol of New Zealand's national" + "<br>" + " rugby team since the 1880s." + "<br>" +"<html>";
+        }
+        if (fauna.contains("Manuka")) {
+            faunaDesc += "<html>" + "<b><u>Manuka:</u></b>" + "<br>" + "typically a shrurb of 2-5 metres but can " + "<br>" + "grow up to 15 metres"
                     + " The flowers are " + "<br>" + "white occasionally pink. It is cultivated in NZ " + "<br>" + "for Manuka honey produced"
-                    + " when honeybees gather the " + "<br>" + "nectar from its flowers." + "<html>";
-        } else if (fauna.equalsIgnoreCase("kauri")) {
-            faunaDesc = "<html>" + "Kauri:" + "<br>" + "it is the largest by volume species of" + "<br>" + " trees in New Zealand. Standing up to"
-                    + "50" + "<br>" + " metres tall. Relies on depriving its competitors " + "<br>" + " nutrition in order to survive. " + "<html>";
-        } else if (fauna.equalsIgnoreCase("flax")) {
-            faunaDesc = "<html>" + "Common Flax:" + "<br>" + "grows up to 3 metres with its flower" + "<br>" + " stalks reaching up to 4 metres."
+                    + " when honeybees gather the " + "<br>" + "nectar from its flowers." + "<br>" + "<html>";
+        }
+        if (fauna.contains("Kauri")) {
+            faunaDesc += "<html>" + "<b><u>Kauri:</u></b>" + "<br>" + "it is the largest by volume species of" + "<br>" + " trees in New Zealand. Standing up to"
+                    + "50" + "<br>" + " metres tall. Relies on depriving its competitors " + "<br>" + " nutrition in order to survive. " + "<br>" + "<html>";
+        }
+        if (fauna.contains("Flax")) {
+            faunaDesc += "<html>" + "<b><u>Common Flax:</u></b>" + "<br>" + "grows up to 3 metres with its flower" + "<br>" + " stalks reaching up to 4 metres."
                     + " Support large " + "<br>" + "communities of animals providing shelter and food resource." + "<br>" + " The name given to this by Maori "
-                    + "is " + "<br>" + "Harakeke. Harakeke is a actually a lily even " + "<br>" + "though it is called flax." + "<html>";
+                    + "is " + "<br>" + "Harakeke. Harakeke is a actually a lily even " + "<br>" + "though it is called flax." + "<br>" + "<html>";
         }
         return faunaDesc;
 
