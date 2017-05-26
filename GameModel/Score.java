@@ -137,4 +137,49 @@ public class Score {
         }
         return null;
     }
+    
+    /**
+     * Used for testing purposes only.
+     * - Ethan
+     */
+    public void emptyDBRecords(){
+        String dbName = "KiwiIsland";
+        String dbUsername = "kiwi";
+        String dbPassword = "kiwi";
+
+        String dbURL = "jdbc:derby://localhost:1527/" + dbName + ";"
+                    + "create=true;"
+                    + "user=" + dbUsername + ";"
+                    + "password=" + dbPassword;
+        
+        String driver = "org.apache.derby.jdbc.ClientDriver";
+        try{
+            Class.forName(driver).newInstance();
+            Connection con = DriverManager.getConnection(dbURL);
+            
+            DatabaseMetaData md = con.getMetaData();
+            ResultSet rs = md.getTables(null, null, "SCORES", null);
+            if(!rs.next()){
+                PreparedStatement ps = con.prepareStatement("CREATE TABLE scores "+
+                        "(name VARCHAR(30)," +
+                        "score int," +
+                        "difficulty VARCHAR(10)," +
+                        "id int GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
+                        "PRIMARY KEY(id))");
+                int execute = ps.executeUpdate();
+            }
+            
+            PreparedStatement st = con.prepareStatement("DELETE FROM scores");
+            
+            int result = st.executeUpdate();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Score.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(Score.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(Score.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Score.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
