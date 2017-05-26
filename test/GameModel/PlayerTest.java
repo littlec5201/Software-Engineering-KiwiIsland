@@ -1,4 +1,4 @@
-package nz.ac.aut.ense701.gameModel;
+package GameModel;
 
 import GameModel.Food;
 import GameModel.Island;
