@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package GameModel;
 
 import java.util.ArrayList;
@@ -19,9 +14,10 @@ import static org.junit.Assert.*;
  */
 public class ScoreTest {
     
-    public Score score;
-    public String playerName;
-    public int playerMoves;
+    private Score score;
+    private String playerName;
+    private int playerMoves;
+    private Difficulty difficulty;
     
     
     public ScoreTest() {
@@ -32,9 +28,11 @@ public class ScoreTest {
         //Creates a new Score for the data file.
         //Player has a name of Test.
         //It took the player 5 moves to complete the game.
-        playerName = "Test";
+        playerName = "Eth";
         playerMoves = 5;
-        score = new Score(playerName, playerMoves);
+        difficulty = Difficulty.EASY;
+        score = new Score(playerName, playerMoves, difficulty);
+        score.emptyDBRecords();
     }
     
     @After
@@ -50,6 +48,7 @@ public class ScoreTest {
     @Test
     public void testUpdate() {
         assertEquals("Check update of database", score.update(), true);
+        score.emptyDBRecords();
     }
 
     /**
@@ -57,9 +56,11 @@ public class ScoreTest {
      */
     @Test
     public void testView() {
+        score.update();
         ArrayList<String> values = score.view();
-        String testValue = "Name: Test, Score: 5";
+        String testValue = "Name: Eth, Score: 5, Difficulty: EASY";
         assertEquals("Check viewing of database", values.get(0), testValue);
+        score.emptyDBRecords();
     }
     
 }
