@@ -898,7 +898,7 @@ public class Game {
                     Position currentPos = occ.getPosition();
                     if (island.getOccupantStringRepresentation(currentPos).contains("P") && island.getOccupantStringRepresentation(currentPos).contains("K")) {
                         for (Occupant o : island.getOccupants(currentPos)) {
-                            if (o.getStringRepresentation().equals("K") && kiwisKilled < ((totalKiwis / 1) - 1)) {
+                            if (o.getStringRepresentation().equals("K") && kiwisKilled < ((totalKiwis / 2) - 1)) {
                                 island.removeOccupant(currentPos, o);
                                 System.out.println("Kiwi was killed by predator");
                                 kiwisKilled++;
