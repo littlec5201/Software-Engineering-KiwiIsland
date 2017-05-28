@@ -1261,6 +1261,14 @@ public class Game {
     public int getKiwisKilled() {
         return this.kiwisKilled;
     }
+    
+    public ArrayList<Occupant> getKiwiList() {
+        return kiwiList;
+    }
+
+    public ArrayList<Occupant> getPredatorList() {
+        return predatorList;
+    }
 
     private Island island;
     private Player player;
