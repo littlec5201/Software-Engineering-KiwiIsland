@@ -438,6 +438,15 @@ public class GameTest extends junit.framework.TestCase
         game.countKiwi();
         assertEquals("Wrong count", game.getKiwiCount(), 1);
     }
+    
+    @Test 
+    public void testMoveOccupant() {
+        ArrayList<Occupant> list = game.getKiwiList();
+        Position pos = list.get(0).getPosition();
+        game.occupantMove(list);
+        Position newPos = list.get(0).getPosition();
+        assertEquals(false, pos.equals(newPos));
+    }
 
 /**
  * Private helper methods
