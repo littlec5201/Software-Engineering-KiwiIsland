@@ -124,6 +124,11 @@ public class GameTest extends junit.framework.TestCase
     }
     
     @Test
+    public void testIsVisible(){
+        assertFalse("Checking for locations that should not be visible", game.isVisible(9, 9));
+    }
+    
+    @Test
     public void testGetFaunaDescription(){
         Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
         Position pos = new Position(island, 2, 4);
@@ -139,6 +144,11 @@ public class GameTest extends junit.framework.TestCase
         Food apple = new Food(playerPosition, "Apple", "A green apple", 4.0, 1.0, 2.0);
         island.addOccupant(playerPosition, apple);
         assertTrue(game.canCollect(apple));
+    }
+    
+    @Test
+    public void testIsExplored(){
+        assertTrue("Checking for a location that is visited", game.isExplored(0, 2));
     }
     
     @Test
@@ -366,6 +376,7 @@ public class GameTest extends junit.framework.TestCase
         assertEquals("Wrong stamina level", player.getStaminaLevel(), 96.3);
     }
  
+    @Test
     public void testUseItemFoodNoIncrease(){
         Item food = new Food(playerPosition,"Sandwich", "Yummy",1.0, 1.0,1.3);
         player.collect(food);
@@ -392,8 +403,7 @@ public class GameTest extends junit.framework.TestCase
     }
     
     @Test
-    public void testUseItemTrapFinalPredator(){
-        
+    public void testUseItemTrapFinalPredator(){ 
         assertTrue("Check player moves", trapAllPredators());
     }
     
@@ -512,7 +522,7 @@ public class GameTest extends junit.framework.TestCase
 /**
  * Private helper methods
  */
-    
+    @Test
     private boolean trapAllPredators()
     {
         //Firstly player needs a trap
@@ -577,6 +587,7 @@ public class GameTest extends junit.framework.TestCase
         return moveOK;
     }
     
+    @Test
     private boolean playerMoveNorth(int numberOfMoves)
     {
         boolean success = false;
@@ -588,6 +599,7 @@ public class GameTest extends junit.framework.TestCase
         return success;
     }
     
+    @Test
     private boolean playerMoveSouth(int numberOfMoves)
     {
         boolean success = false;
@@ -599,6 +611,7 @@ public class GameTest extends junit.framework.TestCase
         return success;
     }
     
+    @Test
     private boolean playerMoveEast(int numberOfMoves)
     {
         boolean success = false;
@@ -610,6 +623,7 @@ public class GameTest extends junit.framework.TestCase
         return success;
     }
     
+    @Test
     private boolean playerMoveWest(int numberOfMoves)
     {
         boolean success = false;
