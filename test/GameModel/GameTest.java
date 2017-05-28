@@ -1,23 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package GameModel;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import java.util.ArrayList;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
+ * The test class GameTest.
  *
- * @author Ethan
+ * @author  AS
+ * @version S2 2011
  */
 public class GameTest extends junit.framework.TestCase
 {
@@ -25,8 +15,7 @@ public class GameTest extends junit.framework.TestCase
     Player     player;
     Position   playerPosition;
     Island island ;
-    int totalTurns;
- 
+    
     /**
      * Default constructor for test class GameTest
      */
@@ -44,8 +33,7 @@ public class GameTest extends junit.framework.TestCase
     {
         // Create a new game from the data file.
         // Player is in position 2,0 & has 100 units of stamina
-        String name = "Test";
-        game           = new Game(name);
+        game           = new Game("gametest", Difficulty.EASY);
         playerPosition = game.getPlayer().getPosition();
         player         = game.getPlayer();
         island = game.getIsland();
@@ -103,7 +91,90 @@ public class GameTest extends junit.framework.TestCase
      * Tests for Accessor methods of Game, excluding those which are wrappers for accessors in other classes.
      * Other class accessors are tested in their test classes.
      */
+    @Test
+    public void testGetOccupantDescription(){
+        Predator lion = new Predator(playerPosition, "Lion", "A furry lion");
+        Position pos = new Position(island, 2, 4);
+        island.addOccupant(pos, lion);
+        assertEquals(game.getOccupantDescription(lion), "A furry lion");
+        
+    }
     
+     @Test
+    public void testGetTerrain(){
+        GridSquare testTerrainSquare = new GridSquare(Terrain.FOREST);
+        assertEquals(testTerrainSquare.getTerrain(), Terrain.FOREST);
+    }
+    
+    @Test
+    public void testIsFauna(){
+        Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
+        Position pos = new Position(island, 2, 4);
+        island.addOccupant(pos, crab);
+        assertTrue(game.isFauna(2, 4));
+        
+    }
+    
+    @Test
+    public void testCheckFauna(){
+          Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
+        Position pos = new Position(island, 2, 4);
+        island.addOccupant(pos, crab);
+        assertEquals(game.checkFauna(2, 4), "Crab");
+    }
+    
+    @Test
+    public void testGetFaunaDescription(){
+        Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
+        Position pos = new Position(island, 2, 4);
+        island.addOccupant(pos, crab);
+        assertEquals(game.getFaunaDesc("Crab"),  "<html>" + "<b><u>Crab:</u> </b>" + "<br>" + "a crustacean that live in the world's ocean," + "<br>" + " fresh water and land."
+                    + " Covered in exoskeleton with" + "<br>" + " a pair of claws. Different species range in " + "<br>" + "sizes"
+                    + " and can grow up to 4 metres." + "<br>" +"<html>");
+        
+    }
+    
+    @Test 
+    public void testCanCollect(){
+        Food apple = new Food(playerPosition, "Apple", "A green apple", 4.0, 1.0, 2.0);
+        island.addOccupant(playerPosition, apple);
+        assertTrue(game.canCollect(apple));
+    }
+    
+    @Test
+    public void testSetGameState(){
+        game.setGameState(GameState.LOST);
+        assertEquals(game.getState(), GameState.LOST);
+    }
+    
+   
+    public void testMoveOccupant() {
+        ArrayList<Occupant> list = game.getKiwiList();
+        Position pos = list.get(0).getPosition();
+        game.occupantMove(list);
+        Position newPos = list.get(0).getPosition();
+        assertEquals(false, pos.equals(newPos));
+    }
+    
+    @Test 
+    public void testSaveScore(){
+        assertTrue(game.saveScores());
+    }
+    
+    @Test
+    public void testGetOccStringRep(){
+        Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
+        Position pos = new Position(island, 2, 4);
+        island.addOccupant(pos, crab);
+        assertEquals(game.getOccupantStringRepresentation(2, 4), "F");
+        
+    }
+    
+    @Test
+    public void testGetPredatorsRemaining(){
+        assertEquals(game.getPredatorsRemaining(), 7);   
+    }
+
     @Test
     public void testGetNumRows(){
         assertEquals("Check row number", game.getNumRows(), 10);
@@ -117,8 +188,8 @@ public class GameTest extends junit.framework.TestCase
     @Test
     public void testGetPlayer(){
         String name = player.getName();
-        String checkName = "Test";
-        assertTrue("Check player name", name.equals(checkName) );
+        String checkName = "gametest";
+        assertTrue(game.getPlayerName(), name.equals(checkName) );
     } 
 
     @Test
@@ -324,7 +395,6 @@ public class GameTest extends junit.framework.TestCase
     public void testUseItemTrapFinalPredator(){
         
         assertTrue("Check player moves", trapAllPredators());
-        assertTrue("Game should be won", game.getState()== GameState.WON);    
     }
     
     @Test
@@ -432,20 +502,11 @@ public class GameTest extends junit.framework.TestCase
     
     @Test
     public void testCountKiwi()
-    {
-        //Need to move to a place where there is a kiwi
-        assertTrue (" This move valid", playerMoveEast(5));
+    {   
+        Kiwi kiwi = new Kiwi(playerPosition, "Kiwi", "kiwibird");
+        island.addOccupant(playerPosition, kiwi);
         game.countKiwi();
-        assertEquals("Wrong count", game.getKiwiCount(), 1);
-    }
-    
-    @Test 
-    public void testMoveOccupant() {
-        ArrayList<Occupant> list = game.getKiwiList();
-        Position pos = list.get(0).getPosition();
-        game.occupantMove(list);
-        Position newPos = list.get(0).getPosition();
-        assertEquals(false, pos.equals(newPos));
+        assertEquals( game.getKiwiCount(), 1);
     }
 
 /**
@@ -558,19 +619,5 @@ public class GameTest extends junit.framework.TestCase
             
         }
         return success;
-    }
-    
-    public void testGetTotalTurns(){
-        assertEquals(0, game.getTotalTurns());
-    }
-   
-    public void testSaveScores(){
-        Score score = new Score("Test", 5);
-        assertTrue(score.update());
-    }
-    
-    public void testViewScores(){
-        Score score = new Score("Test", 5);
-        assertEquals("Name: Test, Score: 5", score.view().get(0));
     }
 }
