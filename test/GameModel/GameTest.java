@@ -33,6 +33,8 @@ public class GameTest extends junit.framework.TestCase
     {
         // Create a new game from the data file.
         // Player is in position 2,0 & has 100 units of stamina
+        MapCreator testMapCreator = new MapCreator();
+        testMapCreator.createTestMap();
         game           = new Game("gametest", Difficulty.EASY);
         playerPosition = game.getPlayer().getPosition();
         player         = game.getPlayer();
@@ -117,10 +119,10 @@ public class GameTest extends junit.framework.TestCase
     
     @Test
     public void testCheckFauna(){
-          Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
-        Position pos = new Position(island, 2, 4);
+        Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
+        Position pos = new Position(island, 3, 9);
         island.addOccupant(pos, crab);
-        assertEquals(game.checkFauna(2, 4), "Crab");
+        assertEquals(game.checkFauna(3, 9), "Crab");
     }
     
     @Test
@@ -174,9 +176,9 @@ public class GameTest extends junit.framework.TestCase
     @Test
     public void testGetOccStringRep(){
         Fauna crab = new Fauna(playerPosition, "Crab", "A scuttling crab");
-        Position pos = new Position(island, 2, 4);
+        Position pos = new Position(island, 4, 3);
         island.addOccupant(pos, crab);
-        assertEquals(game.getOccupantStringRepresentation(2, 4), "F");
+        assertEquals(game.getOccupantStringRepresentation(4, 3), "F");
         
     }
     
@@ -435,7 +437,7 @@ public class GameTest extends junit.framework.TestCase
         game.useItem(screwdriver);
         assertFalse("Trap should be fixed", trap.isBroken());
     }
-   
+    
     @Test
     public void testPlayerMoveToInvalidPosition(){
         //A move NORTH would be invalid from player's start position
@@ -448,7 +450,8 @@ public class GameTest extends junit.framework.TestCase
 
         assertTrue("Move valid", game.playerMove(MoveDirection.SOUTH));
         //Stamina reduced by move
-        assertEquals("Wrong stamina", stamina - 3, player.getStaminaLevel());
+        double Stamina = stamina - player.getStaminaLevel();
+        assertEquals("Wrong stamina", stamina-Stamina, player.getStaminaLevel());
         Position newPos = game.getPlayer().getPosition();
         assertEquals("Wrong position", newPos.getRow(), 1);
         assertFalse("Player should not be here", game.hasPlayer(playerPosition.getRow(), playerPosition.getColumn()));
