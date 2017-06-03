@@ -1188,6 +1188,7 @@ public class Game {
     private void setUpOccupants(Scanner input) {
         int numItems = input.nextInt();
         for (int i = 0; i < numItems; i++) {
+            System.out.println(i);
             String occType = input.next();
             String occName = input.next();
             String occDesc = input.next();
